@@ -24,7 +24,7 @@
         # Define plugins using modular structure but simplified
         plugins = {
           org-linter = {
-            "1.0.0" = makePlugin "orglinter" "1.0.0" ''
+            "1.0.0" = makePlugin "porter-linter" "1.0.0" ''
               echo "🔍 Porter Org Linter v1.0.0 initialized"
               echo "Available linting tools:"
               echo "  - eslint (JavaScript/TypeScript)"
@@ -41,7 +41,7 @@
               alias lint-all="lint-js . && lint-go && lint-shell && lint-yaml"
               
               echo "Use 'lint-all' to run all linters or individual commands like 'lint-js', 'lint-go', etc."
-              echo "Note: Command name is 'orglinter' (no hyphen)"
+              echo "Note: Command name is 'porter-linter' (with hyphen, but different name)"
             '';
           };
           db-seeder = {
