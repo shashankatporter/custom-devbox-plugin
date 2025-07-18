@@ -17,11 +17,11 @@
 
       plugins = {
         org-linter = {
-          "1.0.0" = "echo 'Running organization linter...'; echo '✅ Linting complete!'";
+          "1-0-0" = "echo 'Running organization linter v1.0.0...'; echo '✅ Linting complete!'";
           latest = "echo 'Running organization linter...'; echo '✅ Linting complete!'";
         };
         db-seeder = {
-          "1.0.0" = "echo 'Running database seeder...'; echo '✅ Seeding complete!'";
+          "1-0-0" = "echo 'Running database seeder v1.0.0...'; echo '✅ Seeding complete!'";
           latest = "echo 'Running database seeder...'; echo '✅ Seeding complete!'";
         };
       };
