@@ -1,121 +1,61 @@
 {
-  description = "Porter Custom Devbox Plugins - Centralized plugin repository for Porter organization";
+  description = "Porter Custom Devbox Plugins";
 
-  inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-  };
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
   outputs = { self, nixpkgs }:
     let
-      supportedSystems = [ "x86_64-linux" "x86_64-darwin" "aarch64-linux" "aarch64-darwin" ];
-      forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
+      systems = [ "x86_64-linux" "x86_64-darwin" "aarch64-linux" "aarch64-darwin" ];
+      forAllSystems = nixpkgs.lib.genAttrs systems;
       pkgsFor = forAllSystems (system: import nixpkgs { inherit system; });
 
-      # Plugin creator function
       makePlugin = pkgs: name: version: script: 
         pkgs.writeShellScriptBin name ''
-          #!/bin/bash
           echo "🔧 Porter ${name} v${version}"
           ${script}
         '';
 
-      # Plugin definitions - each with multiple versions
       plugins = {
         org-linter = {
-          "1.0.0" = ''
-            echo "Running basic organization linter..."
-            echo "✅ Basic linting complete!"
-          '';
-          "1.1.0" = ''
-            echo "Running enhanced organization linter..."
-            echo "📁 Checking project structure..."
-            echo "✅ Enhanced linting complete!"
-          '';
-          "1.2.0" = ''
-            echo "Running advanced organization linter..."
-            echo "📁 Checking project structure..."
-            echo "🔍 Analyzing multiple file types..."
-            echo "✅ Advanced linting complete!"
-          '';
-          latest = ''
-            echo "Running latest organization linter..."
-            echo "📁 Checking project structure..."
-            echo "🔍 Analyzing multiple file types..."
-            echo "📊 Generating JSON report..."
-            echo "✅ Latest linting complete!"
-          '';
+          "1.0.0" = "echo 'Running basic linting...'; echo '✅ Basic linting complete!'";
+          "1.1.0" = "echo 'Running enhanced linting...'; echo '📁 Checking structure...'; echo '✅ Enhanced linting complete!'";
+          "1.2.0" = "echo 'Running advanced linting...'; echo '📁 Checking structure...'; echo '🔍 Analyzing files...'; echo '✅ Advanced linting complete!'";
+          latest = "echo 'Running latest linting...'; echo '📁 Checking structure...'; echo '🔍 Analyzing files...'; echo '📊 Generating report...'; echo '✅ Latest linting complete!'";
         };
-
         db-seeder = {
-          "1.0.0" = ''
-            echo "Running basic database seeder..."
-            echo "✅ Basic seeding complete!"
-          '';
-          "2.0.0" = ''
-            echo "Running enhanced database seeder..."
-            echo "🗄️  Supporting multiple databases..."
-            echo "✅ Enhanced seeding complete!"
-          '';
-          "2.1.0" = ''
-            echo "Running advanced database seeder..."
-            echo "🗄️  Supporting MySQL, PostgreSQL, and MongoDB..."
-            echo "⚡ Parallel seeding enabled..."
-            echo "📊 Progress indicators active..."
-            echo "✅ Advanced seeding complete!"
-          '';
-          latest = ''
-            echo "Running latest database seeder..."
-            echo "🗄️  Supporting all major databases..."
-            echo "⚡ Parallel processing enabled..."
-            echo "📊 Real-time progress tracking..."
-            echo "🔧 Configuration validation..."
-            echo "✅ Latest seeding complete!"
-          '';
+          "1.0.0" = "echo 'Running basic seeding...'; echo '✅ Basic seeding complete!'";
+          "2.0.0" = "echo 'Running enhanced seeding...'; echo '🗄️ Multi-database support...'; echo '✅ Enhanced seeding complete!'";
+          "2.1.0" = "echo 'Running advanced seeding...'; echo '🗄️ MySQL, PostgreSQL, MongoDB...'; echo '⚡ Parallel processing...'; echo '✅ Advanced seeding complete!'";
+          latest = "echo 'Running latest seeding...'; echo '🗄️ All databases supported...'; echo '⚡ Parallel processing...'; echo '📊 Real-time tracking...'; echo '✅ Latest seeding complete!'";
         };
       };
 
-    in
-    {
-      # Packages for devbox compatibility
+    in {
       packages = forAllSystems (system:
         let 
           pkgs = pkgsFor.${system};
-          
-          # Generate all plugin versions as packages
-          generatePluginPackages = pluginName: versions:
-            builtins.listToAttrs (map (version: {
-              name = if version == "latest" then pluginName else "${pluginName}-v${version}";
-              value = makePlugin pkgs pluginName version versions.${version};
-            }) (builtins.attrNames versions));
-            
+          mkVersions = name: versions: builtins.listToAttrs (map (version: {
+            name = if version == "latest" then name else "${name}-v${version}";
+            value = makePlugin pkgs name version versions.${version};
+          }) (builtins.attrNames versions));
         in
-        # Create all plugin packages
-        (generatePluginPackages "org-linter" plugins.org-linter) //
-        (generatePluginPackages "db-seeder" plugins.db-seeder)
+        (mkVersions "org-linter" plugins.org-linter) //
+        (mkVersions "db-seeder" plugins.db-seeder)
       );
 
-      # Main devbox plugins output
       devboxPlugins = forAllSystems (system:
         let 
           pkgs = pkgsFor.${system};
-          
-          # Generate all plugin versions
-          generatePluginVersions = pluginName: versions:
-            builtins.listToAttrs (map (version: {
-              name = if version == "latest" then pluginName else "${pluginName}-v${version}";
-              value = {
-                package = makePlugin pkgs pluginName version versions.${version};
-                init_hook = ''
-                  echo "✅ Porter ${pluginName} v${version} is ready!"
-                  echo "   Run '${pluginName}' to use this tool."
-                '';
-              };
-            }) (builtins.attrNames versions));
-            
+          mkPlugins = name: versions: builtins.listToAttrs (map (version: {
+            name = if version == "latest" then name else "${name}-v${version}";
+            value = {
+              package = makePlugin pkgs name version versions.${version};
+              init_hook = "echo '✅ Porter ${name} v${version} ready! Run ${name} to use.'";
+            };
+          }) (builtins.attrNames versions));
         in
-        # Create all plugin versions
-        (generatePluginVersions "org-linter" plugins.org-linter) //
-        (generatePluginVersions "db-seeder" plugins.db-seeder)
+        (mkPlugins "org-linter" plugins.org-linter) //
+        (mkPlugins "db-seeder" plugins.db-seeder)
       );
     };
 }
