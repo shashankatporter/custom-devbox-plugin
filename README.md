@@ -39,8 +39,8 @@ Add plugins to your project's `devbox.json`:
 ```json
 {
   "include": [
-    "github:shashankatporter/custom-devbox-plugin#org-linter",
-    "github:shashankatporter/custom-devbox-plugin#db-seeder"
+    "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin#org-linter",
+    "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin#db-seeder"
   ]
 }
 ```
@@ -52,8 +52,8 @@ For production stability, pin specific versions:
 ```json
 {
   "include": [
-    "github:shashankatporter/custom-devbox-plugin#org-linter-v1.2.0",
-    "github:shashankatporter/custom-devbox-plugin#db-seeder-v2.1.0"  
+    "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin#org-linter-v1.2.0",
+    "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin#db-seeder-v2.1.0"  
   ]
 }
 ```
@@ -89,8 +89,8 @@ db-seeder     # Seed your development database
 ```json
 {
   "include": [
-    "github:shashankatporter/custom-devbox-plugin#org-linter",
-    "github:shashankatporter/custom-devbox-plugin#db-seeder"
+    "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin#org-linter",
+    "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin#db-seeder"
   ]
 }
 ```
@@ -99,8 +99,8 @@ db-seeder     # Seed your development database
 ```json
 {
   "include": [
-    "github:shashankatporter/custom-devbox-plugin#org-linter-v1.2.0",
-    "github:shashankatporter/custom-devbox-plugin#db-seeder-v2.1.0"
+    "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin#org-linter-v1.2.0",
+    "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin#db-seeder-v2.1.0"
   ]
 }
 ```
@@ -112,8 +112,8 @@ Create a standard `devbox.json` template:
 {
   "packages": ["nodejs", "python3"],
   "include": [
-    "github:shashankatporter/custom-devbox-plugin#org-linter",
-    "github:shashankatporter/custom-devbox-plugin#db-seeder"
+    "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin#org-linter",
+    "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin#db-seeder"
   ]
 }
 ```
@@ -165,8 +165,8 @@ Include this in your project templates:
 ```json
 {
   "include": [
-    "github:shashankatporter/custom-devbox-plugin#org-linter",
-    "github:shashankatporter/custom-devbox-plugin#db-seeder"
+    "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin#org-linter",
+    "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin#db-seeder"
   ]
 }
 ```
@@ -195,6 +195,47 @@ nix run .#org-linter
 
 # Test specific version  
 nix run .#org-linter-v1.2.0
+```
+
+## 🔑 Private Repository Access
+
+**Important**: This is a private Porter repository. Developers need proper SSH access.
+
+### Requirements for Developers
+1. **Porter GitHub Organization Access**: Must be member of Porter organization
+2. **SSH Key Setup**: Configured SSH key for GitHub access
+3. **Repository Permissions**: Read access to this repository
+
+### Setup SSH Access
+```bash
+# 1. Generate SSH key (if not already done)
+ssh-keygen -t ed25519 -C "your.email@porter.com"
+
+# 2. Add public key to GitHub account
+cat ~/.ssh/id_ed25519.pub
+# Copy output and add to GitHub: Settings → SSH and GPG keys → New SSH key
+
+# 3. Test SSH access
+ssh -T git@github.com
+# Should show: "Hi username! You've successfully authenticated..."
+```
+
+### For Team Admins
+To grant access to new developers:
+1. Add developer to Porter GitHub organization
+2. Grant repository access permissions 
+3. Share this repository URL and usage instructions
+
+### Troubleshooting Access Issues
+```bash
+# Test SSH connection
+ssh -T git@github.com
+
+# Check SSH key is loaded
+ssh-add -l
+
+# Test repository access
+git ls-remote git@github.com:shashankatporter/custom-devbox-plugin.git
 ```
 
 ## ✨ Benefits

@@ -1,0 +1,5 @@
+{
+  "packages": [
+    "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git#org-linter"
+  ]
+}

@@ -6,8 +6,8 @@
 {
   "packages": ["nodejs", "python3"],
   "include": [
-    "github:shashankatporter/custom-devbox-plugin#org-linter",
-    "github:shashankatporter/custom-devbox-plugin#db-seeder"
+    "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin#org-linter",
+    "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin#db-seeder"
   ]
 }
 ```
@@ -18,8 +18,8 @@
 {
   "packages": ["nodejs", "python3"],
   "include": [
-    "github:shashankatporter/custom-devbox-plugin#org-linter-v1.2.0",
-    "github:shashankatporter/custom-devbox-plugin#db-seeder-v2.1.0"
+    "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin#org-linter-v1.2.0",
+    "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin#db-seeder-v2.1.0"
   ]
 }
 ```

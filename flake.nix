@@ -76,6 +76,24 @@
 
     in
     {
+      # Packages for devbox compatibility
+      packages = forAllSystems (system:
+        let 
+          pkgs = pkgsFor.${system};
+          
+          # Generate all plugin versions as packages
+          generatePluginPackages = pluginName: versions:
+            builtins.listToAttrs (map (version: {
+              name = if version == "latest" then pluginName else "${pluginName}-v${version}";
+              value = makePlugin pkgs pluginName version versions.${version};
+            }) (builtins.attrNames versions));
+            
+        in
+        # Create all plugin packages
+        (generatePluginPackages "org-linter" plugins.org-linter) //
+        (generatePluginPackages "db-seeder" plugins.db-seeder)
+      );
+
       # Main devbox plugins output
       devboxPlugins = forAllSystems (system:
         let 
