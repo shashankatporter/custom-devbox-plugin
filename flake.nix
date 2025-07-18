@@ -10,13 +10,22 @@
 
   # Define the outputs of our flake.
   outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
-      let
-        pkgs = import nixpkgs { inherit system; };
-      in
-      {
-        # This is the special output that Devbox looks for.
-        devboxPlugins = {
+    let
+      # We define a set of supported systems to build for.
+      supportedSystems = [ "x86_64-linux" "x86_64-darwin" "aarch64-linux" "aarch64-darwin" ];
+      
+      # Helper function to generate outputs for each system.
+      forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
+      
+      # Generate packages for each supported system.
+      pkgsFor = forAllSystems (system: import nixpkgs { inherit system; });
+    in
+    {
+      # This is the special output that Devbox looks for.
+      devboxPlugins = forAllSystems (system:
+        let pkgs = pkgsFor.${system};
+        in
+        {
           # Plugin 1: A simple linter with an init_hook
           org-linter = {
             # This is the package that `devbox add` will install.
@@ -48,6 +57,7 @@
               echo "🌱 DB Seeder tool is available. Run 'db-seeder' to populate your database."
             '';
           };
-        };
-      });
+        }
+      );
+    };
 }

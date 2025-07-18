@@ -26,13 +26,26 @@ To use these plugins in your Devbox project:
 
 1. Navigate to your project directory
 2. Add the plugin using the devbox CLI:
+   
+   **For private repositories (requires SSH access):**
    ```bash
-   devbox add github:shashankatporter/custom-devbox-plugin#<plugin-name>
+   devbox add git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git#org-linter
    ```
+   
+   **For public repositories:**
+   ```bash
+   devbox add github:shashankatporter/custom-devbox-plugin#org-linter
+   ```
+
 3. Enter the devbox shell:
    ```bash
    devbox shell
    ```
+
+**Note:** Since this is a private repository, make sure you have:
+- SSH access configured for GitHub
+- Your SSH key added to your GitHub account
+- Proper permissions to access this repository
 
 ## Development
 
