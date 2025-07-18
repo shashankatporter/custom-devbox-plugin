@@ -47,6 +47,39 @@ To use these plugins in your Devbox project:
 - Your SSH key added to your GitHub account
 - Proper permissions to access this repository
 
+## Troubleshooting
+
+### Lock File Issues
+
+If you encounter "cannot write modified lock file" errors:
+
+1. **Ensure the repository has a committed flake.lock file** (✅ This repo has one)
+2. **Use the exact SSH URL format:**
+   ```bash
+   devbox add git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git#org-linter
+   ```
+3. **Alternative: Use local path for testing:**
+   ```bash
+   # Clone the repo locally first
+   git clone git@github.com:shashankatporter/custom-devbox-plugin.git
+   cd your-project
+   devbox add /path/to/custom-devbox-plugin#org-linter
+   ```
+
+### Testing
+
+Run the provided test script to verify everything works:
+```bash
+./test-plugin.sh
+```
+
+### Debug Mode
+
+For detailed error information:
+```bash
+DEVBOX_DEBUG=1 devbox add git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git#org-linter
+```
+
 ## Development
 
 To modify or add new plugins:
