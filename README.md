@@ -1,173 +1,206 @@
 # Porter Custom Devbox Plugins
 
-Easy-to-use development tools for Porter teams using Jetify Devbox with comprehensive version management.
+Centralized repository for Porter organization's custom development tools. These plugins integrate seamlessly with Jetify Devbox for consistent development environments.
 
-## 🚀 Quick Start
+## 🎯 Purpose
 
-### Option 1: One-Command Installation (Recommended)
-```bash
-curl -sSL https://raw.githubusercontent.com/shashankatporter/custom-devbox-plugin/main/install-porter-plugins.sh | bash
-```
-
-### Option 2: Using Plugin Manager with Version Control
-```bash
-# Download the plugin manager
-curl -o porter-plugin-manager https://raw.githubusercontent.com/shashankatporter/custom-devbox-plugin/main/porter-devbox-plugin-manager.sh
-chmod +x porter-plugin-manager
-
-# List available plugins and versions
-./porter-plugin-manager list
-./porter-plugin-manager versions org-linter
-
-# Install specific version
-./porter-plugin-manager add org-linter 1.1.0
-
-# Install latest version
-./porter-plugin-manager add org-linter
-
-# Update to latest
-./porter-plugin-manager update org-linter
-```
-
-### Option 3: Direct Installation with Version Pinning
-```bash
-# Latest version
-devbox add git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git#org-linter
-
-# Specific version
-devbox add git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git?ref=v1.2.0#org-linter
-```
+This repository maintains custom Porter plugins with separate versioning, allowing developers to:
+- Use organization-specific development tools
+- Pin specific plugin versions for stability  
+- Automatically get tools when entering devbox environments
+- Maintain consistency across development teams
 
 ## 📦 Available Plugins
 
 ### org-linter
-- **Current Version**: v1.2.0
-- **Description**: Official Porter organization linter for code standards
-- **Command**: `org-linter`
-- **Category**: Code Quality
-- **Versions**: 1.0.0, 1.1.0, 1.2.0
+Porter's organization-wide code linting tool
 
-### db-seeder  
-- **Current Version**: v2.1.0
-- **Description**: Database seeding tool for development environments
-- **Command**: `db-seeder`
-- **Category**: Database
-- **Versions**: 1.0.0, 2.0.0, 2.1.0
+**Available Versions:**
+- `org-linter` (latest)
+- `org-linter-v1.2.0` (advanced linting with file analysis)
+- `org-linter-v1.1.0` (enhanced linting with structure checking)  
+- `org-linter-v1.0.0` (basic linting)
 
-## 🔄 Version Management
+### db-seeder
+Database seeding tool for development environments
 
-### For Users
-```bash
-# Check available versions
-./porter-plugin-manager versions org-linter
+**Available Versions:**
+- `db-seeder` (latest)
+- `db-seeder-v2.1.0` (advanced with parallel seeding)
+- `db-seeder-v2.0.0` (multi-database support)
+- `db-seeder-v1.0.0` (basic seeding)
 
-# Install specific version for stability
-./porter-plugin-manager add org-linter 1.1.0
+## 🚀 Usage
 
-# Upgrade to latest when ready
-./porter-plugin-manager update org-linter
-```
+### Add to Your Project
 
-### For Production Use
-Pin versions in your `devbox.json` for reproducible builds:
+Add plugins to your project's `devbox.json`:
+
 ```json
 {
-  "packages": [
-    "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git?ref=v1.2.0#org-linter",
-    "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git?ref=v2.1.0#db-seeder"
+  "include": [
+    "github:shashankatporter/custom-devbox-plugin#org-linter",
+    "github:shashankatporter/custom-devbox-plugin#db-seeder"
   ]
 }
 ```
 
-## 🛠 Usage
+### Pin Specific Versions
 
-After installation, enter your devbox shell:
+For production stability, pin specific versions:
+
+```json
+{
+  "include": [
+    "github:shashankatporter/custom-devbox-plugin#org-linter-v1.2.0",
+    "github:shashankatporter/custom-devbox-plugin#db-seeder-v2.1.0"  
+  ]
+}
+```
+
+### Activate Environment
+
+Enter your devbox shell to automatically activate plugins:
+
 ```bash
 devbox shell
 ```
 
-The plugins will be automatically activated and you'll see welcome messages with version info:
+You'll see welcome messages for activated plugins:
 ```
-✅ Porter Org Linter v1.2.0 plugin is active.
-   Run 'org-linter' to lint your project.
-🌱 Porter DB Seeder v2.1.0 tool is available.
-   Run 'db-seeder' to populate your database.
+✅ Porter org-linter v1.2.0 is ready!
+   Run 'org-linter' to use this tool.
+✅ Porter db-seeder v2.1.0 is ready!
+   Run 'db-seeder' to use this tool.
 ```
 
-Then you can use:
+### Use the Tools
+
 ```bash
-org-linter      # Run the organization linter
-db-seeder       # Seed your development database
+org-linter    # Run the organization linter
+db-seeder     # Seed your development database
 ```
 
-## 🏢 For Porter Team Members
+## 🔄 Version Management
 
-### Simple Team Onboarding
+### For Development Teams
 
-1. **New Project Setup**:
-   ```bash
-   devbox init
-   curl -sSL https://raw.githubusercontent.com/shashankatporter/custom-devbox-plugin/main/install-porter-plugins.sh | bash
-   devbox shell
-   ```
-
-2. **Existing Project**:
-   Just run the installation script in your project directory.
-
-### Adding to Project Templates
-
-Add this to your project's `devbox.json`:
+**Latest Versions (Auto-updating):**
 ```json
 {
-  "packages": [
-    "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git#org-linter",
-    "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git#db-seeder"
+  "include": [
+    "github:shashankatporter/custom-devbox-plugin#org-linter",
+    "github:shashankatporter/custom-devbox-plugin#db-seeder"
   ]
 }
 ```
 
-## 🔧 For Plugin Developers
+**Pinned Versions (Stable):**
+```json
+{
+  "include": [
+    "github:shashankatporter/custom-devbox-plugin#org-linter-v1.2.0",
+    "github:shashankatporter/custom-devbox-plugin#db-seeder-v2.1.0"
+  ]
+}
+```
+
+### For New Projects
+
+Create a standard `devbox.json` template:
+```json
+{
+  "packages": ["nodejs", "python3"],
+  "include": [
+    "github:shashankatporter/custom-devbox-plugin#org-linter",
+    "github:shashankatporter/custom-devbox-plugin#db-seeder"
+  ]
+}
+```
+
+## 🛠 For Plugin Maintainers
 
 ### Adding New Plugins
 
-1. Edit `flake.nix` to add your plugin
-2. Update `porter-devbox-plugin-manager.sh`
-3. Update this README
-4. Test with `./test-plugin.sh`
+1. Edit `flake.nix` to add your plugin in the `plugins` section
+2. Add version definitions with implementation scripts
+3. Test the plugin works correctly
+4. Update this README
 
-### Version Management
+### Version Guidelines
 
-Plugins follow semantic versioning. Update the version in `flake.nix` and tag releases:
-```bash
-git tag v1.1.0
-git push origin v1.1.0
-```
+- Use semantic versioning (1.0.0, 1.1.0, 2.0.0)
+- Always maintain a `latest` version
+- Add new versions without removing old ones
+- Test all versions before committing
 
-## Development
+### Example Plugin Addition
 
-To modify or add new plugins:
-
-1. Edit the `flake.nix` file
-2. Update the `flake.lock` file:
-   ```bash
-   nix flake update
-   ```
-3. Commit and push your changes
-
-## Plugin Structure
-
-Each plugin in the `devboxPlugins` output should have:
-- `package`: The main executable/tool
-- `init_hook`: Shell code that runs when entering the devbox shell (optional)
-
-Example:
 ```nix
-my-plugin = {
-  package = pkgs.writeShellScriptBin "my-tool" ''
-    echo "Hello from my custom tool!"
+my-tool = {
+  "1.0.0" = ''
+    echo "Running my-tool v1.0.0..."
+    echo "✅ Basic functionality complete!"
   '';
-  init_hook = ''
-    echo "My plugin is now available!"
+  latest = ''
+    echo "Running latest my-tool..."
+    echo "🚀 All features enabled!"
+    echo "✅ Latest functionality complete!"
   '';
 };
 ```
+
+## 🏢 Team Integration
+
+### Onboarding New Developers
+
+1. Install Jetify Devbox
+2. Clone project repository  
+3. Run `devbox shell`
+4. Porter tools are automatically available!
+
+### Project Templates
+
+Include this in your project templates:
+```json
+{
+  "include": [
+    "github:shashankatporter/custom-devbox-plugin#org-linter",
+    "github:shashankatporter/custom-devbox-plugin#db-seeder"
+  ]
+}
+```
+
+### CI/CD Integration
+
+Use pinned versions in CI environments:
+```yaml
+- name: Setup Development Environment
+  run: |
+    devbox shell -- org-linter
+    devbox shell -- db-seeder --validate
+```
+
+## 🔧 Development
+
+To test changes locally:
+
+```bash
+# Clone the repository
+git clone git@github.com:shashankatporter/custom-devbox-plugin.git
+cd custom-devbox-plugin
+
+# Test a plugin
+nix run .#org-linter
+
+# Test specific version  
+nix run .#org-linter-v1.2.0
+```
+
+## ✨ Benefits
+
+- **Zero Setup**: Tools automatically available when entering devbox
+- **Version Control**: Pin specific versions for reproducible builds
+- **Team Consistency**: Everyone uses the same tool versions
+- **Easy Updates**: Bump versions when ready
+- **No Scripts**: Pure devbox integration, no additional bash files needed

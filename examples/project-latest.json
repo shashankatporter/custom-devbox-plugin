@@ -1,0 +1,7 @@
+{
+  "packages": ["nodejs-18", "python3"],
+  "include": [
+    "github:shashankatporter/custom-devbox-plugin#org-linter",
+    "github:shashankatporter/custom-devbox-plugin#db-seeder"
+  ]
+}
