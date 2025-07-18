@@ -36,8 +36,19 @@
               let
                 # Store the attribute with dots preserved
                 attrName = if version == "latest" then name else "${name}-v${version}";
+                # Also create a safe alias without dots for devbox compatibility
+                safeAttrName = if version == "latest" then "${name}-latest" else "${name}-v${builtins.replaceStrings ["."] ["-"] version}";
               in {
                 name = attrName;
+                value = makePlugin pkgs name version versions.${version};
+              }
+            ) (builtins.attrNames versions)) //
+            # Add safe aliases for devbox
+            builtins.listToAttrs (map (version: 
+              let
+                safeAttrName = if version == "latest" then "${name}-latest" else "${name}-v${builtins.replaceStrings ["."] ["-"] version}";
+              in {
+                name = safeAttrName;
                 value = makePlugin pkgs name version versions.${version};
               }
             ) (builtins.attrNames versions));
