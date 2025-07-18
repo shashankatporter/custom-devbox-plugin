@@ -1,0 +1,12 @@
+{
+  "packages": [],
+  "shell": {
+    "init_hook": [
+      "echo '🧪 Testing Porter Custom Devbox Plugins'"
+    ]
+  },
+  "include": [
+    "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git#org-linter-v1-0-0",
+    "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git#db-seeder-v1-0-0"
+  ]
+}

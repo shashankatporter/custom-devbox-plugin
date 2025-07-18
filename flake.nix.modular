@@ -1,0 +1,125 @@
+{
+  description = "Porter Custom Devbox Plugins - Modular Architecture";
+
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
+  };
+
+  outputs = { self, nixpkgs, flake-utils }:
+    flake-utils.lib.eachDefaultSystem (system:
+      let
+        pkgs = import nixpkgs { inherit system; };
+        
+        # Import our plugin builder library
+        lib = import ./lib {
+          inherit (pkgs) lib;
+          inherit pkgs;
+        };
+        
+        # Import the plugin registry
+        registry = import ./registry/index.nix {
+          inherit (pkgs) lib;
+        };
+        
+        # Create a buildPorterPlugin function with our library
+        buildPorterPlugin = lib.buildPorterPlugin;
+        
+        # Import all plugin modules
+        pluginModules = {
+          org-linter = import ./modules/org-linter { 
+            inherit (pkgs) lib;
+            inherit buildPorterPlugin;
+          };
+          db-seeder = import ./modules/db-seeder {
+            inherit (pkgs) lib; 
+            inherit buildPorterPlugin;
+          };
+        };
+        
+        # Create flattened outputs for devboxPlugins
+        createDevboxPlugins = plugins:
+          builtins.foldl' 
+            (acc: pluginName:
+              let 
+                plugin = plugins.${pluginName};
+                pluginVersions = plugin.versions or {};
+              in
+                acc // builtins.foldl'
+                  (acc2: version:
+                    let 
+                      pluginDrv = plugin.derivations.${version};
+                      versionFormatted = lib.formatVersion version;
+                    in
+                      acc2 // {
+                        "${pluginName}-v${versionFormatted}" = pluginDrv;
+                        "\"${pluginName}@${version}\"" = pluginDrv;
+                      }
+                  )
+                  {}
+                  (builtins.attrNames pluginVersions)
+            )
+            {}
+            (builtins.attrNames plugins);
+        
+        # Create flattened outputs for packages  
+        createPackages = plugins:
+          builtins.foldl'
+            (acc: pluginName:
+              let 
+                plugin = plugins.${pluginName};
+                pluginVersions = plugin.versions or {};
+              in
+                acc // builtins.foldl'
+                  (acc2: version:
+                    let 
+                      pluginDrv = plugin.derivations.${version};
+                    in
+                      acc2 // (lib.createPluginOutputs pluginDrv version)
+                  )
+                  {}
+                  (builtins.attrNames pluginVersions)
+            )
+            {}
+            (builtins.attrNames plugins);
+            
+      in {
+        # Plugin outputs for devbox consumption
+        devboxPlugins = createDevboxPlugins pluginModules;
+        
+        # Package outputs for nix consumption  
+        packages = createPackages pluginModules;
+        
+        # Development tools
+        devShells.default = pkgs.mkShell {
+          buildInputs = with pkgs; [
+            nix
+            jq
+            bash
+          ];
+          
+          shellHook = ''
+            echo "🔧 Porter Plugin Development Environment"
+            echo "======================================"
+            echo
+            echo "Available commands:"
+            echo "  ./scripts/add-plugin.sh      - Add a new plugin"
+            echo "  ./scripts/update-version.sh  - Manage plugin versions"
+            echo "  nix flake show               - Show all outputs"
+            echo "  nix flake check              - Validate flake"
+            echo
+            echo "Plugin Registry:"
+            echo "  Categories: ${builtins.concatStringsSep ", " (builtins.attrNames registry.categories)}"
+            echo "  Total Plugins: ${toString (builtins.length registry.getAllPlugins)}"
+            echo
+          '';
+        };
+        
+        # Expose our libraries for external use
+        lib = lib;
+        
+        # Plugin registry for discovery
+        registry = registry;
+      }
+    );
+}
