@@ -1,0 +1,9 @@
+{
+  "plugin_sources": [
+    {
+      "name": "porter",
+      "url": "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git",
+      "ref": "main"
+    }
+  ]
+}

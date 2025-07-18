@@ -1,0 +1,14 @@
+{
+  "name": "db-seeder",
+  "description": "Porter Database Seeder", 
+  "packages": {
+    "1.0.0": "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git#db-seeder-v1-0-0",
+    "latest": "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git#db-seeder"
+  },
+  "env": {},
+  "shell": {
+    "init_hook": [
+      "echo '✅ Porter db-seeder ready! Run db-seeder to use.'"
+    ]
+  }
+}

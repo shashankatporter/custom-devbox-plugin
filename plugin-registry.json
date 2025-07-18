@@ -1,0 +1,28 @@
+{
+  "plugins": {
+    "org-linter": {
+      "description": "Porter Organization Linter",
+      "homepage": "https://github.com/shashankatporter/custom-devbox-plugin",
+      "versions": {
+        "1.0.0": {
+          "package": "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git#org-linter-v1-0-0"
+        },
+        "latest": {
+          "package": "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git#org-linter"
+        }
+      }
+    },
+    "db-seeder": {
+      "description": "Porter Database Seeder",
+      "homepage": "https://github.com/shashankatporter/custom-devbox-plugin", 
+      "versions": {
+        "1.0.0": {
+          "package": "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git#db-seeder-v1-0-0"
+        },
+        "latest": {
+          "package": "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git#db-seeder"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "org-linter",
+  "description": "Porter Organization Linter",
+  "packages": {
+    "1.0.0": "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git#org-linter-v1-0-0",
+    "latest": "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git#org-linter"
+  },
+  "env": {},
+  "shell": {
+    "init_hook": [
+      "echo '✅ Porter org-linter ready! Run org-linter to use.'"
+    ]
+  }
+}
