@@ -20,21 +20,40 @@
       pkgsFor = forAllSystems (system: import nixpkgs { inherit system; });
     in
     {
+      # Expose packages that can be installed directly
+      packages = forAllSystems (system:
+        let pkgs = pkgsFor.${system};
+        in
+        {
+          # Plugin 1: A simple linter
+          org-linter = pkgs.writeShellScriptBin "org-linter" ''
+            #!/bin/sh
+            echo "Linting your project with the official org linter..."
+            # In a real scenario, you'd run your linter here.
+            echo "Linting complete!"
+          '';
+
+          # Plugin 2: A database seeder tool
+          db-seeder = pkgs.writeShellScriptBin "db-seeder" ''
+            #!/bin/sh
+            echo "Seeding the development database..."
+            # Real logic to connect and seed a DB would go here.
+            echo "Database seeded!"
+          '';
+        }
+      );
+
       # This is the special output that Devbox looks for.
       devboxPlugins = forAllSystems (system:
-        let pkgs = pkgsFor.${system};
+        let 
+          pkgs = pkgsFor.${system};
+          packages = self.packages.${system};
         in
         {
           # Plugin 1: A simple linter with an init_hook
           org-linter = {
             # This is the package that `devbox add` will install.
-            # Here we are just creating a dummy script.
-            package = pkgs.writeShellScriptBin "org-linter" ''
-              #!/bin/sh
-              echo "Linting your project with the official org linter..."
-              # In a real scenario, you'd run your linter here.
-              echo "Linting complete!"
-            '';
+            package = packages.org-linter;
 
             # This is a Devbox plugin hook. It runs when you enter `devbox shell`.
             init_hook = ''
@@ -44,12 +63,7 @@
 
           # Plugin 2: A database seeder tool
           db-seeder = {
-            package = pkgs.writeShellScriptBin "db-seeder" ''
-              #!/bin/sh
-              echo "Seeding the development database..."
-              # Real logic to connect and seed a DB would go here.
-              echo "Database seeded!"
-            '';
+            package = packages.db-seeder;
 
             # You can add other metadata or hooks here if needed.
             init_hook = ''
