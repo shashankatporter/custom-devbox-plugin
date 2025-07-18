@@ -1,0 +1,21 @@
+{
+  "version": "1.0.0",
+  "plugins": {
+    "porter-org-linter": {
+      "name": "Porter Org Linter",
+      "description": "Official Porter organization linter for code standards",
+      "flake": "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git#org-linter",
+      "version": "1.0.0",
+      "category": "linting",
+      "tags": ["linter", "code-quality", "porter"]
+    },
+    "porter-db-seeder": {
+      "name": "Porter DB Seeder",
+      "description": "Database seeding tool for Porter development environments", 
+      "flake": "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git#db-seeder",
+      "version": "1.0.0",
+      "category": "database",
+      "tags": ["database", "seeding", "porter"]
+    }
+  }
+}
