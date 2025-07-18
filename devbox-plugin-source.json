@@ -1,7 +1,0 @@
-{
-  "name": "porter-plugins",
-  "description": "Porter Custom Devbox Plugins Registry",
-  "repository": "https://github.com/shashankatporter/custom-devbox-plugin.git",
-  "plugins_path": "plugins",
-  "registry_file": "plugin-registry.json"
-}
