@@ -39,6 +39,37 @@
           orglinter = pluginBuilder.makePluginPackage plugins.org-linter;
           dbseeder = pluginBuilder.makePluginPackage plugins.db-seeder;
         };
+        
+        # Development shell for testing
+        devShells.default = pkgs.mkShell {
+          buildInputs = with pkgs; [
+            bash
+            jq
+            git
+          ];
+          
+          shellHook = ''
+            echo "Porter Plugin Development Environment - Modular Architecture"
+            echo "============================================================="
+            echo ""
+            echo "Available Plugins:"
+            echo "  - org-linter v1.0.0  - Organization code linting tools"
+            echo "  - db-seeder v1.0.0   - Database seeding and management"
+            echo ""
+            echo "Binary Names:"
+            echo "  orglinter  - org-linter plugin"
+            echo "  dbseeder   - db-seeder plugin"
+            echo ""
+            echo "Test locally with:"
+            echo "  devbox run orglinter"
+            echo "  devbox run dbseeder"
+            echo ""
+            echo "Other repos can use with:"
+            echo '  "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git#orglinter"'
+            echo '  "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git#dbseeder"'
+            echo ""
+          '';
+        };
       }
     );
 }
