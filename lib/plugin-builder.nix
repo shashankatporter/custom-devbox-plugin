@@ -1,41 +1,60 @@
-# Generic Plugin Builder Library
-# This provides a consistent interface for building Porter plugins
+{ pkgs }:
 
-{ lib, pkgs }:
-
-let
-  # Helper function to format version strings for attribute names
-  formatVersion = version: builtins.replaceStrings ["."] ["-"] version;
-  
-  # Create outputs for both dot and dash versions
-  createPluginOutputs = plugin: version: {
-    # Dot version (quoted attribute)
-    "\"${version}\"" = plugin;
-    # Dash version (unquoted attribute)  
-    "${formatVersion version}" = plugin;
+rec {
+  # Core function to build Porter organization plugins
+  buildPorterPlugin = {
+    name,
+    version,
+    scriptPath,
+    description ? "",
+    dependencies ? [],
+    commands ? {}
+  }: 
+  let
+    # Create the main plugin script
+    pluginScript = pkgs.writeShellScriptBin name ''
+      echo "🚀 ${name} v${version}"
+      echo "📝 ${description}"
+      echo ""
+      
+      # Source the actual plugin implementation
+      source "${scriptPath}"
+    '';
+    
+    # Create additional command binaries if specified
+    commandBinaries = pkgs.lib.mapAttrsToList (cmdName: cmdScript) commands;
+    
+    allBinaries = [ pluginScript ] ++ commandBinaries;
+  in
+  {
+    type = "app";
+    program = "${pluginScript}/bin/${name}";
+    meta = {
+      inherit name version description;
+      binaries = map (bin: "${bin}/bin/*") allBinaries;
+    };
   };
 
-  # Generic plugin builder that creates working shell scripts like the simple version
-  buildPorterPlugin = { metadata, versions }:
-    let
-      name = metadata.name;
-      
-      # Build individual version derivations using the working approach
-      versionDerivations = builtins.mapAttrs (version: versionConfig:
-        let
-          shellInit = versionConfig.shellInit or "";
-        in
-        pkgs.writeShellScriptBin name ''
-          echo "🔧 Porter ${name} v${version}"
-          ${shellInit}
-        ''
-      ) versions;
-      
-    in {
-      inherit metadata versions;
-      derivations = versionDerivations;
-    };
+  # Utility to create plugin packages for the packages output
+  makePluginPackage = plugin: pkgs.symlinkJoin {
+    name = plugin.meta.name;
+    paths = plugin.meta.binaries;
+  };
 
-in {
-  inherit buildPorterPlugin formatVersion createPluginOutputs;
+  # Version management utilities
+  versionUtils = {
+    # Convert semantic version to Nix-compatible attribute name
+    toAttrName = version: builtins.replaceStrings ["."] ["-"] version;
+    
+    # Extract major.minor.patch from version string
+    parseVersion = version: 
+      let
+        cleaned = builtins.replaceStrings ["v"] [""] version;
+        parts = pkgs.lib.splitString "." cleaned;
+      in {
+        major = builtins.elemAt parts 0;
+        minor = if builtins.length parts > 1 then builtins.elemAt parts 1 else "0";
+        patch = if builtins.length parts > 2 then builtins.elemAt parts 2 else "0";
+      };
+  };
 }

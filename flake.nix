@@ -1,53 +1,47 @@
 {
-  description = "Porter Custom Devbox Plugins - Fixed Modular Architecture";
+  description = "Custom Devbox plugins for Porter organization";
 
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
+  };
 
-  outputs = { self, nixpkgs }:
-    let
-      systems = [ "x86_64-linux" "x86_64-darwin" "aarch64-linux" "aarch64-darwin" ];
-      forAllSystems = nixpkgs.lib.genAttrs systems;
-      pkgsFor = forAllSystems (system: import nixpkgs { inherit system; });
-
-      # Enhanced plugin builder
-      makePlugin = pkgs: name: version: script: 
-        let
-          # Create safe binary names
-          safeName = builtins.replaceStrings ["-"] [""] name;
-        in
-        pkgs.writeShellScriptBin safeName ''
-          echo "Porter ${name} v${version}"
-          echo "Binary: ${safeName}"
-          echo "----------------------------------------"
-          ${script}
-        '';
-
-      # Define plugins with enhanced content
-      plugins = {
-        org-linter = {
-          "1.0.0" = ''
-            echo "Available linting tools:"
-            echo "  - eslint (JavaScript/TypeScript)"
-            echo "  - prettier (Code formatting)"
-            echo "  - golangci-lint (Go)"
-            echo "  - shellcheck (Shell scripts)"
-            echo "  - yamllint (YAML files)"
-            echo ""
-            
-            # Create linting aliases
-            alias lint-js="eslint --ext .js,.ts,.jsx,.tsx"
-            alias lint-go="golangci-lint run"
-            alias lint-shell="find . -name '*.sh' -exec shellcheck {} \;"
-            alias lint-yaml="yamllint ."
-            alias lint-all="echo 'Running all linters...' && lint-js . && lint-go && lint-shell && lint-yaml"
-            
-            echo "Usage:"
-            echo "  lint-all    - Run all linters"
-            echo "  lint-js     - Lint JavaScript/TypeScript"
-            echo "  lint-go     - Lint Go code"
-            echo "  lint-shell  - Lint shell scripts"
-            echo "  lint-yaml   - Lint YAML files"
-            echo ""
+  outputs = { self, nixpkgs, flake-utils }:
+    flake-utils.lib.eachDefaultSystem (system:
+      let
+        pkgs = nixpkgs.legacyPackages.${system};
+        
+        # Import the plugin builder library
+        pluginBuilder = import ./lib/plugin-builder.nix { inherit pkgs; };
+        
+        # Import the plugin registry
+        registry = import ./registry/index.nix;
+        
+        # Function to load a plugin from the registry
+        loadPlugin = category: pluginName:
+          let
+            pluginInfo = registry.${category}.${pluginName};
+            pluginModule = import pluginInfo.path { inherit pkgs pluginBuilder; };
+          in pluginModule;
+        
+        # Load all plugins from registry
+        plugins = {
+          org-linter = loadPlugin "development" "org-linter";
+          db-seeder = loadPlugin "development" "db-seeder";
+        };
+      in
+      {
+        # Devbox plugins output
+        devboxPlugins = plugins;
+        
+        # Packages output for direct installation
+        packages = {
+          orglinter = pluginBuilder.makePluginPackage plugins.org-linter;
+          dbseeder = pluginBuilder.makePluginPackage plugins.db-seeder;
+        };
+      }
+    );
+}
             echo "Ready to lint your Porter organization code!"
           '';
         };
