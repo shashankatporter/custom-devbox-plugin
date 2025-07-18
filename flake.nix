@@ -17,11 +17,11 @@
 
       plugins = {
         org-linter = {
-          "1-0-0" = "echo 'Running organization linter v1.0.0...'; echo '✅ Linting complete!'";
+          "1.0.0" = "echo 'Running organization linter v1.0.0...'; echo '✅ Linting complete!'";
           latest = "echo 'Running organization linter...'; echo '✅ Linting complete!'";
         };
         db-seeder = {
-          "1-0-0" = "echo 'Running database seeder v1.0.0...'; echo '✅ Seeding complete!'";
+          "1.0.0" = "echo 'Running database seeder v1.0.0...'; echo '✅ Seeding complete!'";
           latest = "echo 'Running database seeder...'; echo '✅ Seeding complete!'";
         };
       };
@@ -30,10 +30,17 @@
       packages = forAllSystems (system:
         let 
           pkgs = pkgsFor.${system};
-          mkVersions = name: versions: builtins.listToAttrs (map (version: {
-            name = if version == "latest" then name else "${name}-v${version}";
-            value = makePlugin pkgs name version versions.${version};
-          }) (builtins.attrNames versions));
+          mkVersions = name: versions: 
+            # Create a mapping that preserves the original version format
+            builtins.listToAttrs (map (version: 
+              let
+                # Store the attribute with dots preserved
+                attrName = if version == "latest" then name else "${name}-v${version}";
+              in {
+                name = attrName;
+                value = makePlugin pkgs name version versions.${version};
+              }
+            ) (builtins.attrNames versions));
         in
         (mkVersions "org-linter" plugins.org-linter) //
         (mkVersions "db-seeder" plugins.db-seeder)
@@ -42,13 +49,18 @@
       devboxPlugins = forAllSystems (system:
         let 
           pkgs = pkgsFor.${system};
-          mkPlugins = name: versions: builtins.listToAttrs (map (version: {
-            name = if version == "latest" then name else "${name}-v${version}";
-            value = {
-              package = makePlugin pkgs name version versions.${version};
-              init_hook = "echo '✅ Porter ${name} v${version} ready! Run ${name} to use.'";
-            };
-          }) (builtins.attrNames versions));
+          mkPlugins = name: versions: 
+            builtins.listToAttrs (map (version: 
+              let
+                attrName = if version == "latest" then name else "${name}-v${version}";
+              in {
+                name = attrName;
+                value = {
+                  package = makePlugin pkgs name version versions.${version};
+                  init_hook = "echo '✅ Porter ${name} v${version} ready! Run ${name} to use.'";
+                };
+              }
+            ) (builtins.attrNames versions));
         in
         (mkPlugins "org-linter" plugins.org-linter) //
         (mkPlugins "db-seeder" plugins.db-seeder)
