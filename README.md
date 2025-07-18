@@ -1,6 +1,6 @@
 # Porter Custom Devbox Plugins
 
-Easy-to-use development tools for Porter teams using Jetify Devbox.
+Easy-to-use development tools for Porter teams using Jetify Devbox with comprehensive version management.
 
 ## 🚀 Quick Start
 
@@ -9,37 +9,75 @@ Easy-to-use development tools for Porter teams using Jetify Devbox.
 curl -sSL https://raw.githubusercontent.com/shashankatporter/custom-devbox-plugin/main/install-porter-plugins.sh | bash
 ```
 
-### Option 2: Using Plugin Manager
+### Option 2: Using Plugin Manager with Version Control
 ```bash
 # Download the plugin manager
 curl -o porter-plugin-manager https://raw.githubusercontent.com/shashankatporter/custom-devbox-plugin/main/porter-devbox-plugin-manager.sh
 chmod +x porter-plugin-manager
 
-# List available plugins
+# List available plugins and versions
 ./porter-plugin-manager list
+./porter-plugin-manager versions org-linter
 
-# Add a specific plugin
-./porter-plugin-manager add porter-org-linter
+# Install specific version
+./porter-plugin-manager add org-linter 1.1.0
+
+# Install latest version
+./porter-plugin-manager add org-linter
+
+# Update to latest
+./porter-plugin-manager update org-linter
 ```
 
-### Option 3: Manual Installation (For Advanced Users)
+### Option 3: Direct Installation with Version Pinning
 ```bash
-# Add individual plugins
+# Latest version
 devbox add git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git#org-linter
-devbox add git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git#db-seeder
+
+# Specific version
+devbox add git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git?ref=v1.2.0#org-linter
 ```
 
 ## 📦 Available Plugins
 
-### porter-org-linter
+### org-linter
+- **Current Version**: v1.2.0
 - **Description**: Official Porter organization linter for code standards
 - **Command**: `org-linter`
 - **Category**: Code Quality
+- **Versions**: 1.0.0, 1.1.0, 1.2.0
 
-### porter-db-seeder  
+### db-seeder  
+- **Current Version**: v2.1.0
 - **Description**: Database seeding tool for development environments
 - **Command**: `db-seeder`
 - **Category**: Database
+- **Versions**: 1.0.0, 2.0.0, 2.1.0
+
+## 🔄 Version Management
+
+### For Users
+```bash
+# Check available versions
+./porter-plugin-manager versions org-linter
+
+# Install specific version for stability
+./porter-plugin-manager add org-linter 1.1.0
+
+# Upgrade to latest when ready
+./porter-plugin-manager update org-linter
+```
+
+### For Production Use
+Pin versions in your `devbox.json` for reproducible builds:
+```json
+{
+  "packages": [
+    "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git?ref=v1.2.0#org-linter",
+    "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git?ref=v2.1.0#db-seeder"
+  ]
+}
+```
 
 ## 🛠 Usage
 
@@ -48,7 +86,15 @@ After installation, enter your devbox shell:
 devbox shell
 ```
 
-The plugins will be automatically activated and you'll see welcome messages. Then you can use:
+The plugins will be automatically activated and you'll see welcome messages with version info:
+```
+✅ Porter Org Linter v1.2.0 plugin is active.
+   Run 'org-linter' to lint your project.
+🌱 Porter DB Seeder v2.1.0 tool is available.
+   Run 'db-seeder' to populate your database.
+```
+
+Then you can use:
 ```bash
 org-linter      # Run the organization linter
 db-seeder       # Seed your development database

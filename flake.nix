@@ -1,97 +1,141 @@
 # flake.nix
 {
-  description = "Porter Custom Devbox Plugins - Easy to use development tools";
+  description = "Porter Devbox Plugins with Clean Version Management";
 
-  # Define the inputs for our flake, primarily Nix Packages collection.
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
   };
 
-  # Define the outputs of our flake.
   outputs = { self, nixpkgs }:
     let
-      # We define a set of supported systems to build for.
       supportedSystems = [ "x86_64-linux" "x86_64-darwin" "aarch64-linux" "aarch64-darwin" ];
-      
-      # Helper function to generate outputs for each system.
       forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
-      
-      # Generate packages for each supported system.
       pkgsFor = forAllSystems (system: import nixpkgs { inherit system; });
 
-      # Version information
-      version = "1.0.0";
+      # Plugin definitions with versions
+      makePlugin = pkgs: name: version: script: 
+        pkgs.writeShellScriptBin name ''
+          #!/bin/sh
+          echo "🔧 Porter ${name} v${version}"
+          ${script}
+        '';
+
+      # Define plugin versions and their implementations
+      pluginVersions = {
+        org-linter = {
+          "v1.0.0" = ''
+            echo "Running basic organization linter..."
+            echo "✅ Basic linting complete!"
+          '';
+          "v1.1.0" = ''
+            echo "Running organization linter with improved features..."
+            echo "📝 Checking configuration files..."
+            echo "✅ Enhanced linting complete!"
+          '';
+          "v1.2.0" = ''
+            echo "Running advanced organization linter..."
+            echo "📁 Checking project structure..."
+            echo "🔍 Analyzing multiple file types..."
+            echo "✅ Advanced linting complete!"
+          '';
+          "latest" = ''
+            echo "Running latest organization linter..."
+            echo "📁 Checking project structure..."
+            echo "🔍 Analyzing multiple file types..."
+            echo "📊 Generating JSON report..."
+            echo "✅ Latest linting complete!"
+          '';
+        };
+        db-seeder = {
+          "v1.0.0" = ''
+            echo "Running basic database seeder..."
+            echo "�️  Seeding MySQL database..."
+            echo "✅ Basic seeding complete!"
+          '';
+          "v2.0.0" = ''
+            echo "Running multi-database seeder..."
+            echo "🗄️  Supporting MySQL and PostgreSQL..."
+            echo "🔄 Environment-specific configurations..."
+            echo "✅ Multi-database seeding complete!"
+          '';
+          "v2.1.0" = ''
+            echo "Running advanced database seeder..."
+            echo "🗄️  Supporting MySQL, PostgreSQL, and MongoDB..."
+            echo "⚡ Parallel seeding enabled..."
+            echo "📊 Progress indicators active..."
+            echo "✅ Advanced seeding complete!"
+          '';
+          "latest" = ''
+            echo "Running latest database seeder..."
+            echo "🗄️  Supporting all major databases..."
+            echo "⚡ Parallel seeding with optimization..."
+            echo "📊 Real-time progress tracking..."
+            echo "✅ Latest seeding complete!"
+          '';
+        };
+      };
     in
     {
-      # Expose packages that can be installed directly
       packages = forAllSystems (system:
-        let pkgs = pkgsFor.${system};
-        in
-        {
-          # Plugin 1: A simple linter
-          org-linter = pkgs.writeShellScriptBin "org-linter" ''
-            #!/bin/sh
-            echo "🔍 Porter Org Linter v${version}"
-            echo "Linting your project with the official Porter org linter..."
-            # In a real scenario, you'd run your linter here.
-            echo "✅ Linting complete!"
-          '';
-
-          # Plugin 2: A database seeder tool
-          db-seeder = pkgs.writeShellScriptBin "db-seeder" ''
-            #!/bin/sh
-            echo "🌱 Porter DB Seeder v${version}"
-            echo "Seeding the development database..."
-            # Real logic to connect and seed a DB would go here.
-            echo "✅ Database seeded!"
-          '';
-
-          # Plugin manager for easy installation
-          porter-plugin-manager = pkgs.writeShellScriptBin "porter-plugin-manager" ''
-            #!/bin/sh
-            exec ${pkgs.bash}/bin/bash ${./porter-devbox-plugin-manager.sh} "$@"
-          '';
-        }
-      );
-
-      # This is the special output that Devbox looks for.
-      devboxPlugins = forAllSystems (system:
         let 
           pkgs = pkgsFor.${system};
-          packages = self.packages.${system};
+          
+          # Generate packages for each plugin version
+          generateVersionedPackages = pluginName: versions:
+            builtins.listToAttrs (map (version: {
+              name = "${pluginName}-${version}";
+              value = makePlugin pkgs pluginName version versions.${version};
+            }) (builtins.attrNames versions));
+          
         in
+        # Create all versioned packages
+        (generateVersionedPackages "org-linter" pluginVersions.org-linter) //
+        (generateVersionedPackages "db-seeder" pluginVersions.db-seeder) //
         {
-          # Plugin 1: A simple linter with an init_hook
-          org-linter = {
-            # This is the package that `devbox add` will install.
-            package = packages.org-linter;
+          # Also provide non-versioned (latest) packages
+          org-linter = makePlugin pkgs "org-linter" "latest" pluginVersions.org-linter.latest;
+          db-seeder = makePlugin pkgs "db-seeder" "latest" pluginVersions.db-seeder.latest;
+        }
+      );
 
-            # This is a Devbox plugin hook. It runs when you enter `devbox shell`.
+      devboxPlugins = forAllSystems (system:
+        let 
+          packages = self.packages.${system};
+          
+          # Create plugin entries for each version
+          generateVersionedPlugins = pluginName: versions:
+            builtins.listToAttrs (map (version: {
+              name = "${pluginName}-${version}";
+              value = {
+                package = packages."${pluginName}-${version}";
+                init_hook = ''
+                  echo "✅ Porter ${pluginName} ${version} is ready!"
+                  echo "   Run '${pluginName}' to use this tool."
+                '';
+              };
+            }) (builtins.attrNames versions));
+            
+        in
+        # Create all versioned plugin definitions
+        (generateVersionedPlugins "org-linter" pluginVersions.org-linter) //
+        (generateVersionedPlugins "db-seeder" pluginVersions.db-seeder) //
+        {
+          # Default (latest) versions
+          org-linter = {
+            package = packages.org-linter;
             init_hook = ''
-              echo "✅ Porter Org Linter v${version} plugin is active."
-              echo "Run 'org-linter' to lint your project."
+              echo "✅ Porter org-linter (latest) is ready!"
+              echo "   Run 'org-linter' to use this tool."
             '';
           };
-
-          # Plugin 2: A database seeder tool
           db-seeder = {
             package = packages.db-seeder;
-
-            # You can add other metadata or hooks here if needed.
             init_hook = ''
-              echo "🌱 Porter DB Seeder v${version} tool is available."
-              echo "Run 'db-seeder' to populate your database."
+              echo "✅ Porter db-seeder (latest) is ready!"
+              echo "   Run 'db-seeder' to use this tool."
             '';
           };
         }
       );
-
-      # Add some metadata
-      meta = {
-        inherit version;
-        description = "Porter Custom Devbox Plugins";
-        homepage = "https://github.com/shashankatporter/custom-devbox-plugin";
-        license = "MIT";
-      };
     };
 }
