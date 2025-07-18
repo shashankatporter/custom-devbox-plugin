@@ -30,10 +30,6 @@ buildPorterPlugin {
         echo "  - shellcheck (Shell scripts)"
         echo "  - yamllint (YAML files)"
         
-        # Setup common linting configurations
-        export ESLINT_CONFIG_PATH="$DEVBOX_PROJECT_ROOT/.eslintrc.js"
-        export PRETTIER_CONFIG_PATH="$DEVBOX_PROJECT_ROOT/.prettierrc"
-        
         # Add linting aliases
         alias lint-js="eslint --ext .js,.ts,.jsx,.tsx"
         alias lint-go="golangci-lint run"

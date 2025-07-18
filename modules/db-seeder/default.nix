@@ -30,25 +30,13 @@ buildPorterPlugin {
         echo "  - Node.js 20 (for JS seeders)"
         echo "  - Python 3.11 (for Python seeders)"
         
-        # Setup database environment
-        export DB_SEEDER_PATH="$DEVBOX_PROJECT_ROOT/db/seeders"
-        export DB_MIGRATIONS_PATH="$DEVBOX_PROJECT_ROOT/db/migrations"
-        export DB_FIXTURES_PATH="$DEVBOX_PROJECT_ROOT/db/fixtures"
-        
         # Add seeding aliases
-        alias db-setup="echo 'Setting up database...' && $DB_SEEDER_PATH/setup.sh"
-        alias db-seed="echo 'Seeding database...' && $DB_SEEDER_PATH/seed.sh"
-        alias db-reset="echo 'Resetting database...' && $DB_SEEDER_PATH/reset.sh"
-        alias db-migrate="echo 'Running migrations...' && $DB_MIGRATIONS_PATH/migrate.sh"
+        alias db-setup="echo 'Setting up database...' && echo 'Run your setup script'"
+        alias db-seed="echo 'Seeding database...' && echo 'Run your seed script'"
+        alias db-reset="echo 'Resetting database...' && echo 'Run your reset script'"
+        alias db-migrate="echo 'Running migrations...' && echo 'Run your migration script'"
         alias db-status="echo 'Database status:' && ps aux | grep -E '(postgres|mysql|redis)'"
         
-        # Create seeder directories if they don't exist
-        mkdir -p "$DB_SEEDER_PATH" "$DB_MIGRATIONS_PATH" "$DB_FIXTURES_PATH"
-        
-        echo "Database paths configured:"
-        echo "  Seeders: $DB_SEEDER_PATH"
-        echo "  Migrations: $DB_MIGRATIONS_PATH" 
-        echo "  Fixtures: $DB_FIXTURES_PATH"
         echo "Use 'db-setup', 'db-seed', 'db-reset', 'db-migrate', or 'db-status'"
       '';
     };

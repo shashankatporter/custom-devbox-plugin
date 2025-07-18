@@ -15,15 +15,14 @@ let
     "${formatVersion version}" = plugin;
   };
 
-  # Generic plugin builder that all plugins can use
+  # Generic plugin builder that creates working shell scripts like the simple version
   buildPorterPlugin = { metadata, versions }:
     let
       name = metadata.name;
       
-      # Build individual version derivations
+      # Build individual version derivations using the working approach
       versionDerivations = builtins.mapAttrs (version: versionConfig:
         let
-          packages = versionConfig.packages or [];
           shellInit = versionConfig.shellInit or "";
         in
         pkgs.writeShellScriptBin name ''
