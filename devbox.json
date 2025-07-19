@@ -1,7 +1,7 @@
 {
   "packages": [
-    "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git?rev=8e29c141ed28cb7fe054990b7722d08a59ec82ce#orglinter",
-    "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git?rev=8e29c141ed28cb7fe054990b7722d08a59ec82ce#dbseeder",
+    "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git#org-linter",
+    "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git#db-seeder",
     "nodejs@20",
     "postgresql@15"
   ]

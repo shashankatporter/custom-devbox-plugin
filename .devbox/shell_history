@@ -1,0 +1,1 @@
+eval "$(curl -L https://nixos.org/nix/install)" || echo "Already installed" && source ~/.zshrc && nix flake show git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git
