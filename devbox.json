@@ -1,3 +1,8 @@
 {
-  "packages": ["nix", "jq", "git"]
+  "packages": [
+    "nix",
+    "jq",
+    "git",
+    "github:shashankatporter/custom-devbox-plugin/development#my-linter"
+  ]
 }
