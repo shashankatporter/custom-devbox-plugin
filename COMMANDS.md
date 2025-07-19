@@ -4,16 +4,16 @@
 
 ```bash
 # Add latest version
-devbox add github:porter/custom-devbox-plugins#my-linter
+devbox add github:shashankatporter/custom-devbox-plugin#my-linter
 
 # Add specific version
-devbox add github:porter/custom-devbox-plugins#my-linter-v1.0.0
+devbox add github:shashankatporter/custom-devbox-plugin#my-linter-v1.0.0
 
 # Add multiple plugins
 devbox add \
-  github:porter/custom-devbox-plugins#my-linter \
-  github:porter/custom-devbox-plugins#security-scanner \
-  github:porter/custom-devbox-plugins#coverage-reporter
+  github:shashankatporter/custom-devbox-plugin#my-linter \
+  github:shashankatporter/custom-devbox-plugin#security-scanner \
+  github:shashankatporter/custom-devbox-plugin#coverage-reporter
 ```
 
 ## Usage
@@ -70,8 +70,8 @@ devbox cache clear
 devbox list | grep porter
 
 # Update to latest
-devbox add github:porter/custom-devbox-plugins#my-linter
+devbox add github:shashankatporter/custom-devbox-plugin#my-linter
 
 # Pin specific version
-devbox add github:porter/custom-devbox-plugins#my-linter-v1.1.0
+devbox add github:shashankatporter/custom-devbox-plugin#my-linter-v1.1.0
 ```
