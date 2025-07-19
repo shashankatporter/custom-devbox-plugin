@@ -1,0 +1,90 @@
+{
+  "version": "1.0.0",
+  "repository": "github:porter/custom-devbox-plugins",
+  "description": "Porter Plugins Registry",
+  "categories": {
+    "linting": "Code quality and style checking tools",
+    "security": "Security scanning and vulnerability assessment",
+    "testing": "Testing utilities and coverage reporting",
+    "database": "Database management and seeding tools",
+    "deployment": "Deployment and infrastructure tools"
+  },
+  "plugins": {
+    "my-linter": {
+      "name": "my-linter",
+      "version": "1.0.0",
+      "description": "Porter Organization Code Linter",
+      "category": "linting",
+      "dependencies": ["shellcheck", "hadolint"],
+      "usage": {
+        "install": "devbox add github:porter/custom-devbox-plugins#my-linter",
+        "install_versioned": "devbox add github:porter/custom-devbox-plugins#my-linter-v1.0.0",
+        "run": "my-linter",
+        "devbox_script": "devbox run lint"
+      },
+      "configuration": {
+        "config_file": ".porter-linter.yml",
+        "env_vars": {
+          "PORTER_LINTER_CONFIG": "Path to linter configuration file"
+        }
+      }
+    },
+    "security-scanner": {
+      "name": "security-scanner", 
+      "version": "1.0.0",
+      "description": "Porter Security Vulnerability Scanner",
+      "category": "security",
+      "dependencies": ["trivy"],
+      "usage": {
+        "install": "devbox add github:porter/custom-devbox-plugins#security-scanner",
+        "install_versioned": "devbox add github:porter/custom-devbox-plugins#security-scanner-v1.0.0",
+        "run": "security-scanner"
+      },
+      "configuration": {
+        "config_file": ".porter-security.yml",
+        "env_vars": {
+          "PORTER_SECURITY_CONFIG": "Path to security scanner configuration"
+        }
+      }
+    },
+    "db-seeder": {
+      "name": "db-seeder",
+      "version": "1.0.0", 
+      "description": "Porter Database Seeder & Migration Tool",
+      "category": "database",
+      "dependencies": ["postgresql"],
+      "usage": {
+        "install": "devbox add github:porter/custom-devbox-plugins#db-seeder",
+        "install_versioned": "devbox add github:porter/custom-devbox-plugins#db-seeder-v1.0.0",
+        "run": "db-seeder"
+      },
+      "configuration": {
+        "config_file": ".porter-db.yml",
+        "seeds_dir": "./seeds",
+        "env_vars": {
+          "PORTER_DB_CONFIG": "Database configuration file path",
+          "PORTER_SEEDS_DIR": "Directory containing SQL seed files"
+        }
+      }
+    },
+    "coverage-reporter": {
+      "name": "coverage-reporter",
+      "version": "1.0.0",
+      "description": "Porter Code Coverage Reporter", 
+      "category": "testing",
+      "dependencies": [],
+      "usage": {
+        "install": "devbox add github:porter/custom-devbox-plugins#coverage-reporter",
+        "install_versioned": "devbox add github:porter/custom-devbox-plugins#coverage-reporter-v1.0.0",
+        "run": "coverage-reporter"
+      },
+      "supported_formats": [
+        "coverage.xml",
+        "coverage.json",
+        "coverage.lcov", 
+        "coverage/lcov.info",
+        "target/site/jacoco/jacoco.xml"
+      ]
+    }
+  }
+}
