@@ -1,5 +1,6 @@
 # Devbox files
 devbox.lock
+.devbox/*
 
 # Nix build artifacts
 result
