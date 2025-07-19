@@ -2,7 +2,7 @@
   # Central plugin registry - organized by category
   development = {
     org-linter = {
-      path = "../modules/org-linter";
+      path = "./modules/org-linter";
       versions = [ "1.0.0" ];
       description = "Organization-wide code quality and standards linter";
       category = "quality-assurance";
@@ -10,7 +10,7 @@
     };
     
     db-seeder = {
-      path = "../modules/db-seeder";
+      path = "./modules/db-seeder";
       versions = [ "1.0.0" ];
       description = "Development database seeding utility";
       category = "database";
