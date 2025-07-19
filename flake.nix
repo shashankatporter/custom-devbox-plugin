@@ -3,51 +3,68 @@
 
   # Define the inputs for our flake, primarily the Nix Packages collection.
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
   };
 
   # Define the outputs of our flake.
-  outputs = { self, nixpkgs }:
-    let
-      # We define a set of supported systems to build for.
-      supportedSystems = [ "x86_64-linux" "x86_64-darwin" "aarch64-linux" "aarch64-darwin" ];
+  outputs = { self, nixpkgs, flake-utils }:
+    flake-utils.lib.eachDefaultSystem (system:
+      let
+        pkgs = nixpkgs.legacyPackages.${system};
 
-      # Helper function to generate outputs for each system.
-      forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
+        # Import plugins directly (avoiding builtins.readDir for Git compatibility)
+        orgLinterPlugin = import ./plugins/org-linter/plugin.nix { inherit pkgs; };
+        dbSeederPlugin = import ./plugins/db-seeder/plugin.nix { inherit pkgs; };
 
-      # This is the magic part for combining modules.
-      # It scans the `./plugins` directory and imports any `plugin.nix` file it finds.
-      # The result is a single attribute set, e.g., { org-linter = { ... }; db-seeder = { ... }; }
-      pluginModules = builtins.listToAttrs (
-        map (pluginName: {
-          name = pluginName;
-          value = import ./plugins/${pluginName}/plugin.nix;
-        }) (builtins.attrNames (builtins.readDir ./plugins))
-      );
+        # Plugin collection
+        plugins = {
+          org-linter = orgLinterPlugin;
+          db-seeder = dbSeederPlugin;
+        };
 
-    in
-    {
-      # This is the special output that Devbox looks for.
-      # It exposes all the combined plugin modules.
-      devboxPlugins = forAllSystems (system:
-        let
-          # Pass pkgs to each plugin definition.
-          # This allows each plugin.nix file to access Nix packages.
-          pkgs = import nixpkgs { inherit system; };
-        in
-          # The `mapAttrs` function iterates through our combined `pluginModules`
-          # and passes `pkgs` to each one, which evaluates it.
-          nixpkgs.lib.mapAttrs (pluginName: pluginDef: pluginDef { inherit pkgs; }) pluginModules
-      );
+      in
+      {
+        # This is the special output that Devbox looks for.
+        devboxPlugins = plugins;
 
-      # Provide packages output for direct installation
-      packages = forAllSystems (system:
-        let 
-          pkgs = import nixpkgs { inherit system; };
-          plugins = nixpkgs.lib.mapAttrs (pluginName: pluginDef: pluginDef { inherit pkgs; }) pluginModules;
-        in
-          nixpkgs.lib.mapAttrs (name: plugin: plugin.package) plugins
-      );
+        # Provide packages output for direct installation
+        packages = {
+          org-linter = orgLinterPlugin.package;
+          db-seeder = dbSeederPlugin.package;
+        };
+
+        # Development shell for testing
+        devShells.default = pkgs.mkShell {
+          buildInputs = with pkgs; [
+            bash
+            jq
+            git
+          ];
+          
+          shellHook = ''
+            echo "Porter Plugin Registry - Fixed SSH Architecture"
+            echo "==============================================="
+            echo ""
+            echo "Available Plugins:"
+            echo "  - org-linter"
+            echo "  - db-seeder"
+            echo ""
+            echo "Usage in other repos:"
+            echo '  "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git#org-linter"'
+            echo '  "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git#db-seeder"'
+            echo ""
+          '';
+        };
+
+        # Default package for plugin listing
+        defaultPackage = pkgs.writeShellScriptBin "list-plugins" ''
+          echo "Available Porter organization plugins:"
+          echo " - org-linter"
+          echo " - db-seeder"
+        '';
+      }
+    );
 
       # You can also add a "defaultPackage" for convenience,
       # for example, to provide a CLI that lists all available plugins.
