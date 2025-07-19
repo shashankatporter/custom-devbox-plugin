@@ -20,26 +20,18 @@ rec {
       # Source the actual plugin implementation
       source "${scriptPath}"
     '';
-    
-    # Create additional command binaries if specified
-    commandBinaries = pkgs.lib.mapAttrsToList (cmdName: cmdScript) commands;
-    
-    allBinaries = [ pluginScript ] ++ commandBinaries;
   in
   {
     type = "app";
     program = "${pluginScript}/bin/${name}";
     meta = {
       inherit name version description;
-      binaries = map (bin: "${bin}/bin/*") allBinaries;
+      package = pluginScript;
     };
   };
 
   # Utility to create plugin packages for the packages output
-  makePluginPackage = plugin: pkgs.symlinkJoin {
-    name = plugin.meta.name;
-    paths = plugin.meta.binaries;
-  };
+  makePluginPackage = plugin: plugin.meta.package;
 
   # Version management utilities
   versionUtils = {
