@@ -10,16 +10,16 @@
     "deployment": "Deployment and infrastructure tools"
   },
   "plugins": {
-    "my-linter": {
-      "name": "my-linter",
+    "mylinter": {
+      "name": "mylinter",
       "version": "1.0.0",
       "description": "Porter Organization Code Linter",
       "category": "linting",
       "dependencies": ["shellcheck", "hadolint"],
       "usage": {
-        "install": "devbox add github:shashankatporter/custom-devbox-plugin#my-linter",
-        "install_versioned": "devbox add github:shashankatporter/custom-devbox-plugin#my-linter-v1.0.0",
-        "run": "my-linter",
+        "install": "devbox add github:shashankatporter/custom-devbox-plugin#mylinter",
+        "install_versioned": "devbox add github:shashankatporter/custom-devbox-plugin#mylinter@v1.0.0",
+        "run": "mylinter",
         "devbox_script": "devbox run lint"
       },
       "configuration": {
@@ -29,16 +29,16 @@
         }
       }
     },
-    "security-scanner": {
-      "name": "security-scanner", 
+    "securityscanner": {
+      "name": "securityscanner", 
       "version": "1.0.0",
       "description": "Porter Security Vulnerability Scanner",
       "category": "security",
       "dependencies": ["trivy"],
       "usage": {
-        "install": "devbox add github:shashankatporter/custom-devbox-plugin#security-scanner",
-        "install_versioned": "devbox add github:shashankatporter/custom-devbox-plugin#security-scanner-v1.0.0",
-        "run": "security-scanner"
+        "install": "devbox add github:shashankatporter/custom-devbox-plugin#securityscanner",
+        "install_versioned": "devbox add github:shashankatporter/custom-devbox-plugin#securityscanner@v1.0.0",
+        "run": "securityscanner"
       },
       "configuration": {
         "config_file": ".porter-security.yml",
@@ -47,16 +47,16 @@
         }
       }
     },
-    "db-seeder": {
-      "name": "db-seeder",
+    "dbseeder": {
+      "name": "dbseeder",
       "version": "1.0.0", 
       "description": "Porter Database Seeder & Migration Tool",
       "category": "database",
       "dependencies": ["postgresql"],
       "usage": {
-        "install": "devbox add github:shashankatporter/custom-devbox-plugin#db-seeder",
-        "install_versioned": "devbox add github:shashankatporter/custom-devbox-plugin#db-seeder-v1.0.0",
-        "run": "db-seeder"
+        "install": "devbox add github:shashankatporter/custom-devbox-plugin#dbseeder",
+        "install_versioned": "devbox add github:shashankatporter/custom-devbox-plugin#dbseeder@v1.0.0",
+        "run": "dbseeder"
       },
       "configuration": {
         "config_file": ".porter-db.yml",
@@ -67,16 +67,16 @@
         }
       }
     },
-    "coverage-reporter": {
-      "name": "coverage-reporter",
+    "coveragereporter": {
+      "name": "coveragereporter",
       "version": "1.0.0",
       "description": "Porter Code Coverage Reporter", 
       "category": "testing",
       "dependencies": [],
       "usage": {
-        "install": "devbox add github:shashankatporter/custom-devbox-plugin#coverage-reporter",
-        "install_versioned": "devbox add github:shashankatporter/custom-devbox-plugin#coverage-reporter-v1.0.0",
-        "run": "coverage-reporter"
+        "install": "devbox add github:shashankatporter/custom-devbox-plugin#coveragereporter",
+        "install_versioned": "devbox add github:shashankatporter/custom-devbox-plugin#coveragereporter@v1.0.0",
+        "run": "coveragereporter"
       },
       "supported_formats": [
         "coverage.xml",

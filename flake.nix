@@ -16,8 +16,8 @@
         '';
 
       plugins = {
-        my-linter = {
-          "1-0-0" = ''
+        mylinter = {
+          "1.0.0" = ''
             echo "🔍 Running Porter linter..."
             
             # Check for common files
@@ -57,8 +57,8 @@
           '';
         };
         
-        security-scanner = {
-          "1-0-0" = ''
+        securityscanner = {
+          "1.0.0" = ''
             echo "🛡️ Running security scan..."
             echo "  → Scanning for common security issues..."
             
@@ -78,8 +78,8 @@
           '';
         };
         
-        coverage-reporter = {
-          "1-0-0" = ''
+        coveragereporter = {
+          "1.0.0" = ''
             echo "📊 Generating coverage report..."
             
             # Look for common coverage files
@@ -106,8 +106,8 @@
           '';
         };
         
-        db-seeder = {
-          "1-0-0" = ''
+        dbseeder = {
+          "1.0.0" = ''
             echo "🌱 Porter Database Seeder"
             
             SEEDS_DIR="./seeds"
@@ -142,31 +142,31 @@
         let 
           pkgs = pkgsFor.${system};
           mkVersions = name: versions: builtins.listToAttrs (map (version: {
-            name = if version == "latest" then name else "${name}-v${version}";
+            name = if version == "latest" then name else "${name}@v${version}";
             value = makePlugin pkgs name version versions.${version};
           }) (builtins.attrNames versions));
         in
-        (mkVersions "my-linter" plugins.my-linter) //
-        (mkVersions "security-scanner" plugins.security-scanner) //
-        (mkVersions "coverage-reporter" plugins.coverage-reporter) //
-        (mkVersions "db-seeder" plugins.db-seeder)
+        (mkVersions "mylinter" plugins.mylinter) //
+        (mkVersions "securityscanner" plugins.securityscanner) //
+        (mkVersions "coveragereporter" plugins.coveragereporter) //
+        (mkVersions "dbseeder" plugins.dbseeder)
       );
 
       devboxPlugins = forAllSystems (system:
         let 
           pkgs = pkgsFor.${system};
           mkPlugins = name: versions: builtins.listToAttrs (map (version: {
-            name = if version == "latest" then name else "${name}-v${version}";
+            name = if version == "latest" then name else "${name}@v${version}";
             value = {
               package = makePlugin pkgs name version versions.${version};
               init_hook = "echo '✅ Porter ${name} v${version} ready! Run ${name} to use.'";
             };
           }) (builtins.attrNames versions));
         in
-        (mkPlugins "my-linter" plugins.my-linter) //
-        (mkPlugins "security-scanner" plugins.security-scanner) //
-        (mkPlugins "coverage-reporter" plugins.coverage-reporter) //
-        (mkPlugins "db-seeder" plugins.db-seeder)
+        (mkPlugins "mylinter" plugins.mylinter) //
+        (mkPlugins "securityscanner" plugins.securityscanner) //
+        (mkPlugins "coveragereporter" plugins.coveragereporter) //
+        (mkPlugins "dbseeder" plugins.dbseeder)
       );
     };
 }

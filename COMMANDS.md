@@ -4,16 +4,16 @@
 
 ```bash
 # Add latest version
-devbox add github:shashankatporter/custom-devbox-plugin#my-linter
+devbox add github:shashankatporter/custom-devbox-plugin#mylinter
 
-# Add specific version
-devbox add github:shashankatporter/custom-devbox-plugin#my-linter-v1.0.0
+# Add specific version (new @ syntax)
+devbox add github:shashankatporter/custom-devbox-plugin#mylinter@v1.0.0
 
 # Add multiple plugins
 devbox add \
-  github:shashankatporter/custom-devbox-plugin#my-linter \
-  github:shashankatporter/custom-devbox-plugin#security-scanner \
-  github:shashankatporter/custom-devbox-plugin#coverage-reporter
+  github:shashankatporter/custom-devbox-plugin#mylinter \
+  github:shashankatporter/custom-devbox-plugin#securityscanner \
+  github:shashankatporter/custom-devbox-plugin#coveragereporter
 ```
 
 ## Usage
@@ -23,16 +23,26 @@ devbox add \
 devbox shell
 
 # Run plugins directly
-my-linter
-security-scanner
-coverage-reporter
-db-seeder
+mylinter
+securityscanner
+coveragereporter
+dbseeder
 
 # Run via devbox scripts
 devbox run lint
 devbox run security
 devbox run coverage
-devbox run db-setup
+devbox run seed-db
+
+# Check versions
+mylinter --version
+securityscanner --version
+
+# Run with options
+mylinter --config myproject/.lintrc
+securityscanner --severity high --format json
+coveragereporter --threshold 80
+dbseeder --env dev
 ```
 
 ## Configuration
@@ -42,8 +52,8 @@ devbox run db-setup
 ls -la .porter-*.yml
 
 # View plugin help (if available)  
-my-linter --help
-security-scanner --help
+mylinter --help
+securityscanner --help
 ```
 
 ## Troubleshooting
@@ -53,8 +63,8 @@ security-scanner --help
 devbox list
 
 # Verify plugin availability
-which my-linter
-which security-scanner
+which mylinter
+which securityscanner
 
 # View environment variables
 env | grep PORTER
@@ -70,8 +80,17 @@ devbox cache clear
 devbox list | grep porter
 
 # Update to latest
-devbox add github:shashankatporter/custom-devbox-plugin#my-linter
+devbox add github:shashankatporter/custom-devbox-plugin#mylinter
 
 # Pin specific version
-devbox add github:shashankatporter/custom-devbox-plugin#my-linter-v1.1.0
+devbox add github:shashankatporter/custom-devbox-plugin#mylinter@v1.1.0
 ```
+
+## Available Plugins
+
+| Plugin | Description | Version | Install Command |
+|--------|-------------|---------|-----------------|
+| mylinter | Code linting and style checking | v1.0.0 | `devbox add github:shashankatporter/custom-devbox-plugin#mylinter@v1.0.0` |
+| securityscanner | Security vulnerability scanning | v1.0.0 | `devbox add github:shashankatporter/custom-devbox-plugin#securityscanner@v1.0.0` |
+| coveragereporter | Code coverage reporting | v1.0.0 | `devbox add github:shashankatporter/custom-devbox-plugin#coveragereporter@v1.0.0` |
+| dbseeder | Database seeding utility | v1.0.0 | `devbox add github:shashankatporter/custom-devbox-plugin#dbseeder@v1.0.0` |

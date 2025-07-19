@@ -1,27 +1,14 @@
 ```
-custom-devbox-plugins/
-├── flake.nix                 # Main Flake definition
+custom-devbox-plugin/
+├── flake.nix                 # Main Flake definition with all plugins
 ├── flake.lock               # Lock file for reproducibility
-├── README.md                # Documentation
-├── plugins/                 # Plugin definitions directory
-│   ├── security/
-│   │   ├── security-scanner.nix
-│   │   └── vulnerability-check.nix
-│   ├── linting/
-│   │   ├── org-linter.nix
-│   │   └── code-formatter.nix
-│   ├── testing/
-│   │   ├── coverage-reporter.nix
-│   │   └── test-runner.nix
-│   └── database/
-│       ├── db-seeder.nix
-│       └── migration-runner.nix
+├── devbox.json              # Development environment setup
+├── devbox.lock              # Devbox lock file
+├── COMMANDS.md              # Quick reference commands
+├── STRUCTURE.md             # This file - project structure
 ├── lib/                     # Shared utilities
-│   ├── common.nix           # Common plugin utilities
-│   └── versions.nix         # Version management helpers
+│   └── common.nix           # Common plugin utilities
 ├── registry/                # Plugin registry
 │   └── plugins.json         # Searchable plugin catalog
-└── examples/                # Usage examples
-    ├── basic-project/
-    └── full-stack-project/
+└── test-devbox.json         # Test configuration
 ```
