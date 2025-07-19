@@ -142,7 +142,7 @@
         let 
           pkgs = pkgsFor.${system};
           mkVersions = name: versions: builtins.listToAttrs (map (version: {
-            name = if version == "latest" then name else "${name}@v${version}";
+            name = if version == "latest" then name else "${name}-v${version}";
             value = makePlugin pkgs name version versions.${version};
           }) (builtins.attrNames versions));
         in
@@ -156,7 +156,7 @@
         let 
           pkgs = pkgsFor.${system};
           mkPlugins = name: versions: builtins.listToAttrs (map (version: {
-            name = if version == "latest" then name else "${name}@v${version}";
+            name = if version == "latest" then name else "${name}-v${version}";
             value = {
               package = makePlugin pkgs name version versions.${version};
               init_hook = "echo '✅ Porter ${name} v${version} ready! Run ${name} to use.'";

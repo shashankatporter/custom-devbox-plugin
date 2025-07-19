@@ -6,8 +6,8 @@
 # Add latest version
 devbox add github:shashankatporter/custom-devbox-plugin#mylinter
 
-# Add specific version (new @ syntax)
-devbox add github:shashankatporter/custom-devbox-plugin#mylinter@v1.0.0
+# Add specific version (hyphen syntax for Nix compatibility)
+devbox add github:shashankatporter/custom-devbox-plugin#mylinter-v1.0.0
 
 # Add multiple plugins
 devbox add \
@@ -83,14 +83,14 @@ devbox list | grep porter
 devbox add github:shashankatporter/custom-devbox-plugin#mylinter
 
 # Pin specific version
-devbox add github:shashankatporter/custom-devbox-plugin#mylinter@v1.1.0
+devbox add github:shashankatporter/custom-devbox-plugin#mylinter-v1.1.0
 ```
 
 ## Available Plugins
 
 | Plugin | Description | Version | Install Command |
 |--------|-------------|---------|-----------------|
-| mylinter | Code linting and style checking | v1.0.0 | `devbox add github:shashankatporter/custom-devbox-plugin#mylinter@v1.0.0` |
-| securityscanner | Security vulnerability scanning | v1.0.0 | `devbox add github:shashankatporter/custom-devbox-plugin#securityscanner@v1.0.0` |
-| coveragereporter | Code coverage reporting | v1.0.0 | `devbox add github:shashankatporter/custom-devbox-plugin#coveragereporter@v1.0.0` |
-| dbseeder | Database seeding utility | v1.0.0 | `devbox add github:shashankatporter/custom-devbox-plugin#dbseeder@v1.0.0` |
+| mylinter | Code linting and style checking | v1.0.0 | `devbox add github:shashankatporter/custom-devbox-plugin#mylinter-v1.0.0` |
+| securityscanner | Security vulnerability scanning | v1.0.0 | `devbox add github:shashankatporter/custom-devbox-plugin#securityscanner-v1.0.0` |
+| coveragereporter | Code coverage reporting | v1.0.0 | `devbox add github:shashankatporter/custom-devbox-plugin#coveragereporter-v1.0.0` |
+| dbseeder | Database seeding utility | v1.0.0 | `devbox add github:shashankatporter/custom-devbox-plugin#dbseeder-v1.0.0` |

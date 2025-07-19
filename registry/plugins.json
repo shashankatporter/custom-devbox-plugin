@@ -18,7 +18,7 @@
       "dependencies": ["shellcheck", "hadolint"],
       "usage": {
         "install": "devbox add github:shashankatporter/custom-devbox-plugin#mylinter",
-        "install_versioned": "devbox add github:shashankatporter/custom-devbox-plugin#mylinter@v1.0.0",
+        "install_versioned": "devbox add github:shashankatporter/custom-devbox-plugin#mylinter-v1.0.0",
         "run": "mylinter",
         "devbox_script": "devbox run lint"
       },
@@ -37,7 +37,7 @@
       "dependencies": ["trivy"],
       "usage": {
         "install": "devbox add github:shashankatporter/custom-devbox-plugin#securityscanner",
-        "install_versioned": "devbox add github:shashankatporter/custom-devbox-plugin#securityscanner@v1.0.0",
+        "install_versioned": "devbox add github:shashankatporter/custom-devbox-plugin#securityscanner-v1.0.0",
         "run": "securityscanner"
       },
       "configuration": {
@@ -55,7 +55,7 @@
       "dependencies": ["postgresql"],
       "usage": {
         "install": "devbox add github:shashankatporter/custom-devbox-plugin#dbseeder",
-        "install_versioned": "devbox add github:shashankatporter/custom-devbox-plugin#dbseeder@v1.0.0",
+        "install_versioned": "devbox add github:shashankatporter/custom-devbox-plugin#dbseeder-v1.0.0",
         "run": "dbseeder"
       },
       "configuration": {
@@ -75,7 +75,7 @@
       "dependencies": [],
       "usage": {
         "install": "devbox add github:shashankatporter/custom-devbox-plugin#coveragereporter",
-        "install_versioned": "devbox add github:shashankatporter/custom-devbox-plugin#coveragereporter@v1.0.0",
+        "install_versioned": "devbox add github:shashankatporter/custom-devbox-plugin#coveragereporter-v1.0.0",
         "run": "coveragereporter"
       },
       "supported_formats": [
