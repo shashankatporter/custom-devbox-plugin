@@ -51,8 +51,17 @@
             echo "  - db-seeder"
             echo ""
             echo "Usage in other repos:"
-            echo '  "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git#org-linter"'
-            echo '  "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git#db-seeder"'
+            echo "  SSH (has Nix flake issues with private repos):"
+            echo '    "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git#org-linter"'
+            echo '    "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git#db-seeder"'
+            echo ""
+            echo "  HTTPS with SSO/PAT (recommended for Nix flakes):"
+            echo '    "github:shashankatporter/custom-devbox-plugin#org-linter"'
+            echo '    "github:shashankatporter/custom-devbox-plugin#db-seeder"'
+            echo ""
+            echo "To use HTTPS with SSO:"
+            echo "  1. Create GitHub Personal Access Token with repo access"
+            echo "  2. Configure git credentials or use gh auth login"
             echo ""
           '';
         };
@@ -65,41 +74,3 @@
         '';
       }
     );
-
-      # You can also add a "defaultPackage" for convenience,
-      # for example, to provide a CLI that lists all available plugins.
-      defaultPackage = forAllSystems (system:
-        let pkgs = import nixpkgs { inherit system; };
-        in pkgs.writeShellScriptBin "list-plugins" ''
-          echo "Available Porter organization plugins:"
-          ${nixpkgs.lib.concatStringsSep "\n" (map (name: "echo \" - ${name}\"") (builtins.attrNames pluginModules))}
-        ''
-      );
-
-      # Development shell for testing
-      devShells = forAllSystems (system: {
-        default = let 
-          pkgs = import nixpkgs { inherit system; };
-        in pkgs.mkShell {
-          buildInputs = with pkgs; [
-            bash
-            jq
-            git
-          ];
-          
-          shellHook = ''
-            echo "Porter Plugin Registry - Clean Architecture"
-            echo "==========================================="
-            echo ""
-            echo "Available Plugins:"
-            ${nixpkgs.lib.concatStringsSep "\n" (map (name: "echo \"  - ${name}\"") (builtins.attrNames pluginModules))}
-            echo ""
-            echo "Usage in other repos:"
-            echo '  "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git#org-linter"'
-            echo '  "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git#db-seeder"'
-            echo ""
-          '';
-        };
-      });
-    };
-}
