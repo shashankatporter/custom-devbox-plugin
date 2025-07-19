@@ -1,39 +1,39 @@
 {
-  description = "Porter Organization's Private Devbox Plugin Registry";
+  description = "Custom Devbox plugins for Porter organization";
 
-  # Define the inputs for our flake, primarily the Nix Packages collection.
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  # Define the outputs of our flake.
   outputs = { self, nixpkgs, flake-utils }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-
-        # Import plugins directly (avoiding builtins.readDir for Git compatibility)
-        orgLinterPlugin = import ./plugins/org-linter/plugin.nix { inherit pkgs; };
-        dbSeederPlugin = import ./plugins/db-seeder/plugin.nix { inherit pkgs; };
-
+        
+        # Import the plugin builder library
+        pluginBuilder = import ./lib/plugin-builder.nix { inherit pkgs; };
+        
+        # Import plugins directly from modules
+        orgLinter = import ./modules/org-linter/default.nix { inherit pkgs pluginBuilder; };
+        dbSeeder = import ./modules/db-seeder/default.nix { inherit pkgs pluginBuilder; };
+        
         # Plugin collection
         plugins = {
-          org-linter = orgLinterPlugin;
-          db-seeder = dbSeederPlugin;
+          org-linter = orgLinter;
+          db-seeder = dbSeeder;
         };
-
       in
       {
-        # This is the special output that Devbox looks for.
+        # Devbox plugins output
         devboxPlugins = plugins;
-
-        # Provide packages output for direct installation
+        
+        # Packages output for direct installation
         packages = {
-          org-linter = orgLinterPlugin.package;
-          db-seeder = dbSeederPlugin.package;
+          orglinter = pluginBuilder.makePluginPackage plugins.org-linter;
+          dbseeder = pluginBuilder.makePluginPackage plugins.db-seeder;
         };
-
+        
         # Development shell for testing
         devShells.default = pkgs.mkShell {
           buildInputs = with pkgs; [
@@ -43,34 +43,27 @@
           ];
           
           shellHook = ''
-            echo "Porter Plugin Registry - Fixed SSH Architecture"
-            echo "==============================================="
+            echo "Porter Plugin Development Environment - Modular Architecture"
+            echo "============================================================="
             echo ""
             echo "Available Plugins:"
-            echo "  - org-linter"
-            echo "  - db-seeder"
+            echo "  - org-linter v1.0.0  - Organization code linting tools"
+            echo "  - db-seeder v1.0.0   - Database seeding and management"
             echo ""
-            echo "Usage in other repos:"
-            echo "  SSH (has Nix flake issues with private repos):"
-            echo '    "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git#org-linter"'
-            echo '    "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git#db-seeder"'
+            echo "Binary Names:"
+            echo "  orglinter  - org-linter plugin"
+            echo "  dbseeder   - db-seeder plugin"
             echo ""
-            echo "  HTTPS with SSO/PAT (recommended for Nix flakes):"
-            echo '    "github:shashankatporter/custom-devbox-plugin#org-linter"'
-            echo '    "github:shashankatporter/custom-devbox-plugin#db-seeder"'
+            echo "Test locally with:"
+            echo "  orglinter"
+            echo "  dbseeder"
             echo ""
-            echo "To use HTTPS with SSO:"
-            echo "  1. Create GitHub Personal Access Token with repo access"
-            echo "  2. Configure git credentials or use gh auth login"
+            echo "Other repos can use with:"
+            echo '  "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git#orglinter"'
+            echo '  "git+ssh://git@github.com/shashankatporter/custom-devbox-plugin.git#dbseeder"'
             echo ""
           '';
         };
-
-        # Default package for plugin listing
-        defaultPackage = pkgs.writeShellScriptBin "list-plugins" ''
-          echo "Available Porter organization plugins:"
-          echo " - org-linter"
-          echo " - db-seeder"
-        '';
       }
     );
+}
