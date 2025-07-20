@@ -6,9 +6,6 @@ devbox.lock
 result
 result-*
 
-# Nix flake files (if auto-generated)
-flake.lock
-
 # Environment files
 .env
 .env.local
