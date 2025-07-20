@@ -25,23 +25,26 @@
         let
           pkgs = pkgsFor.${system};
           tools = allToolsFor system;
-        in
-        tools // {
-          porter-tools = pkgs.symlinkJoin {
+
+          # CORRECTED: Define the combined package here once...
+          porter-tools-pkg = pkgs.symlinkJoin {
             name = "porter-tools";
             paths = [ tools.org-linter tools.db-seeder ];
           };
-          default = self.packages.${system}.porter-tools;
+        in
+        tools // {
+          porter-tools = porter-tools-pkg;
+          # ...and assign it directly, without recursion.
+          default = porter-tools-pkg;
         }
       );
 
       devboxPlugins = forAllSystems (system: {
         default = {
-          package = self.packages.${system}.porter-tools;
+          # This now correctly references the default package from above.
+          package = self.packages.${system}.default;
           
-          # NEW: Use create_files instead of init_hook for robustness.
           create_files = {
-            # This creates a file at .devbox/gen/porter-startup.sh
             ".devbox/gen/porter-startup.sh" = ''
               #!/bin/sh
               echo "--- Running Porter startup scripts ---"
