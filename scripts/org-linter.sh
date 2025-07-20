@@ -4,3 +4,4 @@
 #
 echo "Running organization linter..."
 echo "✅ Linting complete!"
+echo "Just kidding, this is a placeholder!"
