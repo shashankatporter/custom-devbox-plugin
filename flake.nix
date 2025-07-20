@@ -10,7 +10,7 @@
         pkgs = import nixpkgs { inherit system; };
       in {
         devShells.default = pkgs.mkShell {
-          packages = [ pkgs.nodejs pkgs.mongodb ];
+          packages = [];
           shellHook = ''
             export MY_PLUGIN_VAR="Injected from flake"
             # Example copying config (optional)
