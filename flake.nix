@@ -22,6 +22,14 @@
             echo "Devbox-like Nix flake shell is ready"
           '';
         };
+        packages = {
+          default = pkgs.stdenv.mkDerivation {
+            name = "custom-devbox-plugin";
+            src = ./.;
+            buildPhase = "true";
+            installPhase = "mkdir -p $out";
+          };
+        };
       }
     );
 }
