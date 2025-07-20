@@ -5,34 +5,24 @@
 
   outputs = { self, nixpkgs }:
     let
-      # Support multiple systems
+      # Support multiple architectures
       systems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
       
-      forAllSystems = f: nixpkgs.lib.genAttrs systems (system: f system);
+      forAllSystems = f: nixpkgs.lib.genAttrs systems (system: f {
+        pkgs = nixpkgs.legacyPackages.${system};
+        inherit system;
+      });
     in {
-      packages = forAllSystems (system:
-        let
-          pkgs = import nixpkgs { inherit system; };
-          
-          lintApp = pkgs.writeShellApplication {
-            name = "linter";
-            runtimeInputs = [
-              pkgs.shellcheck
-              # Add other dependencies as needed
-            ];
-            text = builtins.readFile ./scripts/linter.sh;
-          };
-        in {
-          linter = lintApp;
-          default = lintApp;  # Makes it accessible as #default too
-        });
-
-      apps = forAllSystems (system: {
-        linter = {
-          type = "app";
-          program = "${self.packages.${system}.linter}/bin/linter";
+      packages = forAllSystems ({ pkgs, system }: {
+        linter = pkgs.writeShellApplication {
+          name = "linter";
+          runtimeInputs = [ pkgs.shellcheck ];
+          text = builtins.readFile ./scripts/linter.sh;
         };
-        default = {
+      });
+
+      apps = forAllSystems ({ pkgs, system }: {
+        linter = {
           type = "app";
           program = "${self.packages.${system}.linter}/bin/linter";
         };
