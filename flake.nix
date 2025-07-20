@@ -12,14 +12,40 @@
         devShells.default = pkgs.mkShell {
           packages = [];
           shellHook = ''
+            # --- Plugin env ---
             export MY_PLUGIN_VAR="Injected from flake"
-            # Example copying config (optional)
+            # (Add more plugin env vars here)
+
+            # --- User env ---
+            if [ -f ./config/user-env.sh ]; then
+              source ./config/user-env.sh
+            fi
+            # (User can add their own env vars in ./config/user-env.sh)
+
+            # --- Plugin init_hook ---
             if [ ! -f ./config/my-plugin.conf ]; then
               cp ${./config/my-plugin.conf} ./config/my-plugin.conf
             fi
-            # Call additional hook
             source ${./scripts/my-plugin-hook.sh}
+
+            # --- User init hook ---
+            if [ -f ./config/user-init-hook.sh ]; then
+              source ./config/user-init-hook.sh
+            fi
+
+            # --- Start Shell (entrypoint) ---
             echo "Devbox-like Nix flake shell is ready"
+            if [ -n "$RUN_SCRIPTS" ]; then
+              echo "[INFO] Running user scripts: $RUN_SCRIPTS"
+              eval "$RUN_SCRIPTS"
+              exit $?
+            fi
+            if [ -n "$START_SERVICES" ]; then
+              echo "[INFO] Starting services: $START_SERVICES"
+              eval "$START_SERVICES"
+              exit $?
+            fi
+            # Otherwise, drop into interactive shell
           '';
         };
         packages = {
