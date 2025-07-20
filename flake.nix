@@ -9,13 +9,8 @@
       forAllSystems = nixpkgs.lib.genAttrs systems;
       pkgsFor = forAllSystems (system: import nixpkgs { inherit system; });
 
-      makePlugin = pkgs: name: version: script: 
-        pkgs.writeShellScriptBin name ''
-          echo "🔧 Porter ${name} v${version}"
-          ${script}
-        '';
-
-      plugins = {
+      # Define the plugins data structure
+      pluginsData = {
         org-linter = {
           "1-0-0" = "echo 'Running organization linter v1.0.0...'; echo '✅ Linting complete!'";
           latest = "echo 'Running organization linter...'; echo '✅ Linting complete!'";
@@ -26,32 +21,46 @@
         };
       };
 
-    in {
-      packages = forAllSystems (system:
-        let 
+      # Helper to create a single package from a script
+      makePluginPackage = pkgs: name: version: script: 
+        pkgs.writeShellScriptBin name ''
+          echo "🔧 Porter ${name} v${version}"
+          ${script}
+        '';
+      
+      # Build all packages for a given system
+      allPackagesFor = system:
+        let
           pkgs = pkgsFor.${system};
-          mkVersions = name: versions: builtins.listToAttrs (map (version: {
-            name = if version == "latest" then name else "${name}-v${version}";
-            value = makePlugin pkgs name version versions.${version};
-          }) (builtins.attrNames versions));
+          # Turn a set of versions into a set of packages
+          makePackagesFromVersions = pluginName: versions:
+            builtins.listToAttrs (map (version: {
+              # e.g., name = "org-linter" or "org-linter-v1-0-0"
+              name = if version == "latest" then pluginName else "${pluginName}-v${version}";
+              value = makePluginPackage pkgs pluginName version versions.${version};
+            }) (builtins.attrNames versions));
         in
-        (mkVersions "org-linter" plugins.org-linter) //
-        (mkVersions "db-seeder" plugins.db-seeder)
-      );
+        # Merge the packages for all plugins
+        (makePackagesFromVersions "org-linter" pluginsData.org-linter) //
+        (makePackagesFromVersions "db-seeder" pluginsData.db-seeder);
 
+    in
+    {
+      # Expose the packages directly
+      packages = forAllSystems allPackagesFor;
+
+      # Expose them as Devbox plugins, referencing the already-built packages
       devboxPlugins = forAllSystems (system:
-        let 
-          pkgs = pkgsFor.${system};
-          mkPlugins = name: versions: builtins.listToAttrs (map (version: {
-            name = if version == "latest" then name else "${name}-v${version}";
-            value = {
-              package = makePlugin pkgs name version versions.${version};
-              init_hook = "echo '✅ Porter ${name} v${version} ready! Run ${name} to use.'";
-            };
-          }) (builtins.attrNames versions));
+        let
+          # Get the packages we already built for this system
+          systemPackages = allPackagesFor system;
         in
-        (mkPlugins "org-linter" plugins.org-linter) //
-        (mkPlugins "db-seeder" plugins.db-seeder)
+          # Map over the packages to add the devbox-specific attributes like init_hook
+          nixpkgs.lib.mapAttrs (name: pkg: {
+            # Reference the package instead of rebuilding it
+            package = pkg;
+            init_hook = "echo '✅ Porter plugin ${name} ready! Run ${name} to use.'";
+          }) systemPackages
       );
     };
 }
