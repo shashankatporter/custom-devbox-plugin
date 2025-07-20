@@ -25,8 +25,6 @@
         let
           pkgs = pkgsFor.${system};
           tools = allToolsFor system;
-
-          # CORRECTED: Define the combined package here once...
           porter-tools-pkg = pkgs.symlinkJoin {
             name = "porter-tools";
             paths = [ tools.org-linter tools.db-seeder ];
@@ -34,18 +32,13 @@
         in
         tools // {
           porter-tools = porter-tools-pkg;
-          # ...and assign it directly, without recursion.
           default = porter-tools-pkg;
-        }
-      );
 
-      devboxPlugins = forAllSystems (system: {
-        default = {
-          # This now correctly references the default package from above.
-          package = self.packages.${system}.default;
-          
-          create_files = {
-            ".devbox/gen/porter-startup.sh" = ''
+          # NEW: Define the startup script as its own package.
+          # writeTextFile creates a plain text file, not an executable.
+          startup-script = pkgs.writeTextFile {
+            name = "porter-startup.sh";
+            text = ''
               #!/bin/sh
               echo "--- Running Porter startup scripts ---"
               db-seeder
@@ -53,7 +46,8 @@
               echo "--- Startup scripts complete ---"
             '';
           };
-        };
-      });
+        }
+      );
+      # REMOVED: The entire devboxPlugins output is gone. We no longer need it.
     };
 }
