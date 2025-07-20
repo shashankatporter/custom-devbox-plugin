@@ -27,5 +27,12 @@
           program = "${self.packages.${system}.linter}/bin/linter";
         };
       });
+
+      devboxPlugins = forAllSystems ({ pkgs, system }: {
+        linter = {
+          package = self.packages.${system}.linter;
+          init_hook = "echo '✅ Porter linter ready! Run linter to use.'";
+        };
+      });
     };
 }
