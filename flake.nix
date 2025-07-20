@@ -9,7 +9,7 @@
       forAllSystems = nixpkgs.lib.genAttrs systems;
       pkgsFor = forAllSystems (system: import nixpkgs { inherit system; });
 
-      makePluginPackage = pkgs: name: scriptPath: 
+      makePluginPackage = pkgs: name: scriptPath:
         pkgs.writeShellScriptBin name (builtins.readFile scriptPath);
 
       allToolsFor = system:
@@ -30,12 +30,12 @@
             paths = [ tools.org-linter tools.db-seeder ];
           };
         in
-        tools // {
+        # CORRECTED: Define startup-script at the top level of this set.
+        {
+          inherit (tools) org-linter db-seeder; # Keep these individual packages
           porter-tools = porter-tools-pkg;
           default = porter-tools-pkg;
 
-          # NEW: Define the startup script as its own package.
-          # writeTextFile creates a plain text file, not an executable.
           startup-script = pkgs.writeTextFile {
             name = "porter-startup.sh";
             text = ''
@@ -48,6 +48,5 @@
           };
         }
       );
-      # REMOVED: The entire devboxPlugins output is gone. We no longer need it.
     };
 }
