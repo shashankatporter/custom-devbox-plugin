@@ -6,7 +6,7 @@
   outputs = { self, nixpkgs }:
     let
       system = builtins.currentSystem;
-      pkgs   = import nixpkgs { inherit system; };
+      pkgs = import nixpkgs { inherit system; };
       # bundle the bash script together with its runtime dependencies
       lintApp = pkgs.writeShellApplication {
         name          = "linter";
@@ -16,11 +16,11 @@
           # pkgs.nodejs   (if your script uses Node.js)
           # ...any others you use inside the script
         ];
-        text          = builtins.readFile ./scripts/linter.sh;
+        text = builtins.readFile ./scripts/linter.sh;
       };
     in {
-      packages.${system}.my-lint = lintApp;
-      apps.${system}.my-lint = {
+      packages.${system}.linter = lintApp;
+      apps.${system}.linter = {
         type = "app";
         program = "${lintApp}/bin/linter";
       };
