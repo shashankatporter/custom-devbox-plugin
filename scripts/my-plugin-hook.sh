@@ -1,0 +1,1 @@
+echo "Custom hook script executed"
