@@ -30,23 +30,22 @@
           tools = allToolsFor system;
         in
         tools // {
-          # NEW: Create a single package that combines both tools.
-          # pkgs.symlinkJoin merges the /bin directories of all listed packages.
+          # This single package combines both tools using symlinks.
           porter-tools = pkgs.symlinkJoin {
             name = "porter-tools";
             paths = [ tools.org-linter tools.db-seeder ];
           };
+
+          # IMPORTANT: This makes "porter-tools" the default package for this flake.
+          default = self.packages.${system}.porter-tools;
         }
       );
 
       # This output now provides a single, default plugin for Devbox
       devboxPlugins = forAllSystems (system: {
-        # NEW: a "default" plugin.
-        # Devbox uses this automatically when you add the flake URL without a #fragment.
+        # Devbox uses this "default" when you add the flake URL without a #fragment.
         default = {
-          # It provides the combined "porter-tools" package...
           package = self.packages.${system}.porter-tools;
-          # ...and runs the desired init_hook.
           init_hook = "db-seeder";
         };
       });
