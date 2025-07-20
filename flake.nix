@@ -46,7 +46,15 @@
         # Devbox uses this "default" when you add the flake URL without a #fragment.
         default = {
           package = self.packages.${system}.porter-tools;
-          init_hook = "db-seeder";
+          
+          # MODIFIED: The init_hook is now a multi-line script that runs both commands.
+          # The '' (two single quotes) syntax is how you create multi-line strings in Nix.
+          init_hook = ''
+            echo "--- Running Porter startup scripts ---"
+            db-seeder
+            org-linter
+            echo "--- Startup scripts complete ---"
+          '';
         };
       });
     };
