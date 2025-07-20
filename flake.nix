@@ -1,26 +1,27 @@
 {
-  description = "My Plugin-Like Devbox Flake";
+  description = "Devbox-like plugin flake: Node.js + MongoDB + Custom Hook";
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
   };
-  outputs = { self, nixpkgs }: 
-    let
-      system = "x86_64-linux";
-      pkgs = import nixpkgs {
-        inherit system;
-        # Use overlays here if needed
-      };
-    in {
-      devShells.${system}.default = pkgs.mkShell {
-        # Packages like Devbox plugins would add
-        packages = [ pkgs.nodejs pkgs.mongodb ];
-        # Environment variables
-        shellHook = ''
-          export MY_PLUGIN_VAR=1
-          # Run custom lifecycle scripts, copy config, etc.
-          source ./scripts/my-hook.sh
-        '';
-        # Can create/copy files if desired (using hooks)
-      };
-    };
+  outputs = { self, nixpkgs, flake-utils }:
+    flake-utils.lib.eachDefaultSystem (system:
+      let
+        pkgs = import nixpkgs { inherit system; };
+      in {
+        devShells.default = pkgs.mkShell {
+          packages = [ pkgs.nodejs pkgs.mongodb ];
+          shellHook = ''
+            export MY_PLUGIN_VAR="Injected from flake"
+            # Example copying config (optional)
+            if [ ! -f ./config/my-plugin.conf ]; then
+              cp ${./config/my-plugin.conf} ./config/my-plugin.conf
+            fi
+            # Call additional hook
+            source ${./scripts/my-plugin-hook.sh}
+            echo "Devbox-like Nix flake shell is ready"
+          '';
+        };
+      }
+    );
 }
